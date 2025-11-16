@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\MetodePembayaran;
 use App\Models\Sampah;
 use App\Models\Transaksi;
+use App\Libraries\MidtransSnap;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 
@@ -16,6 +17,7 @@ class PenjualanController extends BaseController
     protected $metodeBayarModel;
     protected $klienModel;
     protected $transaksiModel;
+    protected $midtransSnap;
 
     public function __construct()
     {
@@ -23,6 +25,7 @@ class PenjualanController extends BaseController
         $this->metodeBayarModel = new MetodePembayaran();
         $this->klienModel = new Client();
         $this->transaksiModel = new Transaksi();
+        $this->midtransSnap = new MidtransSnap();
     }
 
     public function index()
@@ -95,7 +98,9 @@ class PenjualanController extends BaseController
             return redirect()->back();
         }
 
-        $stokTersedia = $stokTersedia - $jumlah_jual;
+        // Ambil data sampah untuk mendapatkan harga
+        $sampahData = $this->sampahModel->find($nama_sampah);
+        $totalHarga = $sampahData['harga_jual'] * $jumlah_jual;
 
         $data = [
             'tanggal' => $tanggal,
@@ -103,21 +108,6 @@ class PenjualanController extends BaseController
             'jumlah' => $jumlah_jual,
             'metode_bayar' => $metode_bayar,
         ];
-
-
-        // Handle upload file bukti QRIS
-        // if ($bukti_qris && $bukti_qris->isValid() && !$bukti_qris->hasMoved()) {
-        //     $filename = $bukti_qris->getRandomName();
-        //     $data['bukti'] = $filename;
-
-        //     // Pastikan folder bukti ada
-        //     $buktiPath = ROOTPATH . 'public/bukti';
-        //     if (!is_dir($buktiPath)) {
-        //         mkdir($buktiPath, 0755, true);
-        //     }
-
-        //     $bukti_qris->move($buktiPath, $filename);
-        // }
 
         if ($id) {
             $data['id'] = $id;
@@ -127,6 +117,90 @@ class PenjualanController extends BaseController
             $data['client_id'] = session('clientId');
             $data['jenis'] = 'out';
         }
+
+        // Jika metode pembayaran adalah Midtrans
+        if ($metode_bayar === 'midtrans') {
+            try {
+                // Simpan transaksi dulu (belum update stok)
+                $this->transaksiModel->db->transException(true)->transStart();
+                $this->transaksiModel->save($data);
+                $transaksiId = $this->transaksiModel->getInsertID();
+
+                // Generate order ID untuk Midtrans
+                $orderId = 'TRX-' . $transaksiId . '-' . time();
+
+                // Update transaksi dengan order_id (simpan di field bukti)
+                $this->transaksiModel->update($transaksiId, ['bukti' => $orderId]);
+
+                // Ambil data client untuk customer details
+                $clientData = $this->klienModel->find(session('clientId'));
+
+                // Siapkan parameter untuk Midtrans
+                $midtransParams = [
+                    'transaction_details' => [
+                        'order_id' => $orderId,
+                        'gross_amount' => (int) $totalHarga,
+                    ],
+                    'item_details' => [
+                        [
+                            'id' => 'SMPH-' . $nama_sampah,
+                            'price' => (int) $sampahData['harga_jual'],
+                            'quantity' => (int) $jumlah_jual,
+                            'name' => $sampahData['nama_sampah'] . ' (' . $jumlah_jual . ' kg)',
+                        ]
+                    ],
+                    'customer_details' => [
+                        'first_name' => $clientData['nama_lengkap'] ?? 'Customer',
+                        'email' => $clientData['email'] ?? 'customer@example.com',
+                        'phone' => $clientData['no_telp'] ?? '',
+                    ],
+                    'callbacks' => [
+                        'finish' => base_url('penjualan/midtrans-finish'),
+                        'unfinish' => base_url('penjualan/midtrans-unfinish'),
+                        'error' => base_url('penjualan/midtrans-error'),
+                    ]
+                ];
+
+                // Buat transaksi Midtrans
+                $midtransTransaction = $this->midtransSnap->createTransaction($midtransParams);
+                $token = $midtransTransaction->token;
+
+                $this->transaksiModel->db->transComplete();
+
+                // Jika request dari AJAX, kembalikan token Midtrans
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'token' => $token,
+                        'transaksi_id' => $transaksiId,
+                        'order_id' => $orderId
+                    ]);
+                }
+
+                // Jika bukan AJAX, redirect dengan token
+                return redirect()->to('penjualan/midtrans-payment?token=' . $token);
+            } catch (\Throwable $th) {
+                $this->transaksiModel->db->transRollback();
+
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Gagal membuat transaksi Midtrans: ' . $th->getMessage()
+                    ]);
+                }
+
+                $message = [
+                    'title' => 'Error',
+                    'text' => 'Gagal membuat transaksi Midtrans: ' . $th->getMessage(),
+                    'icon' => 'error'
+                ];
+                session()->setFlashdata($message);
+                return redirect()->back();
+            }
+        }
+
+        // Untuk metode pembayaran selain Midtrans (tunai)
+        $stokTersedia = $stokTersedia - $jumlah_jual;
 
         try {
             $this->transaksiModel->db->transException(true)->transStart();
@@ -329,6 +403,203 @@ class PenjualanController extends BaseController
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
+        }
+    }
+
+    /**
+     * Tampilkan halaman pembayaran Midtrans Snap
+     */
+    public function midtransPayment()
+    {
+        $token = $this->request->getGet('token');
+
+        if (!$token) {
+            $message = [
+                'title' => 'Error',
+                'text' => 'Token pembayaran tidak ditemukan',
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
+            return redirect()->to('penjualan');
+        }
+
+        $config = config('Midtrans');
+
+        $data = [
+            'title' => 'Pembayaran Midtrans',
+            'token' => $token,
+            'client_key' => $config->clientKey
+        ];
+
+        return view('penjualan/midtrans_payment', $data);
+    }
+
+    /**
+     * Handle notification dari Midtrans (webhook)
+     */
+    public function midtransNotification()
+    {
+        try {
+            $notification = json_decode(file_get_contents('php://input'), true);
+
+            if (!$notification) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid notification']);
+            }
+
+            $orderId = $notification['order_id'] ?? null;
+            $transactionStatus = $notification['transaction_status'] ?? null;
+            $fraudStatus = $notification['fraud_status'] ?? null;
+
+            if (!$orderId) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Order ID not found']);
+            }
+
+            // Cari transaksi berdasarkan order_id (disimpan di field bukti)
+            $transaksi = $this->transaksiModel->where('bukti', $orderId)->first();
+
+            if (!$transaksi) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Transaction not found']);
+            }
+
+            // Verifikasi signature (optional, untuk keamanan lebih)
+            // $config = config('Midtrans');
+            // \Midtrans\Config::$serverKey = $config->serverKey;
+            // $status = \Midtrans\Transaction::status($orderId);
+
+            // Handle status pembayaran
+            if ($transactionStatus == 'capture') {
+                if ($fraudStatus == 'challenge') {
+                    // TODO: Set payment status in transaction to 'challenge'
+                } else if ($fraudStatus == 'accept') {
+                    // Pembayaran berhasil, update stok
+                    $this->updateStokAfterPayment($transaksi);
+                }
+            } else if ($transactionStatus == 'settlement') {
+                // Pembayaran berhasil, update stok
+                $this->updateStokAfterPayment($transaksi);
+            } else if ($transactionStatus == 'pending') {
+                // Pembayaran masih pending
+            } else if ($transactionStatus == 'deny' || $transactionStatus == 'expire' || $transactionStatus == 'cancel') {
+                // Pembayaran gagal atau dibatalkan
+            }
+
+            return $this->response->setJSON(['status' => 'ok']);
+        } catch (\Exception $e) {
+            log_message('error', 'Midtrans notification error: ' . $e->getMessage());
+            return $this->response->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Handle redirect setelah pembayaran selesai
+     */
+    public function midtransFinish()
+    {
+        $orderId = $this->request->getGet('order_id');
+
+        if ($orderId) {
+            // Cari transaksi
+            $transaksi = $this->transaksiModel->where('bukti', $orderId)->first();
+
+            if ($transaksi) {
+                // Cek status pembayaran dari Midtrans
+                $config = config('Midtrans');
+                \Midtrans\Config::$serverKey = $config->serverKey;
+                \Midtrans\Config::$isProduction = $config->isProduction;
+                \Midtrans\Config::$isSanitized = $config->isSanitized;
+                \Midtrans\Config::$is3ds = $config->is3ds;
+
+                try {
+                    $status = \Midtrans\Transaction::status($orderId);
+                    $transactionStatus = is_object($status) ? $status->transaction_status : ($status['transaction_status'] ?? 'unknown');
+
+                    if ($transactionStatus == 'settlement' || $transactionStatus == 'capture') {
+                        // Update stok jika belum diupdate
+                        $this->updateStokAfterPayment($transaksi);
+
+                        $message = [
+                            'title' => 'Success',
+                            'text' => 'Pembayaran berhasil!',
+                            'icon' => 'success'
+                        ];
+                    } else {
+                        $message = [
+                            'title' => 'Info',
+                            'text' => 'Pembayaran sedang diproses. Status: ' . $transactionStatus,
+                            'icon' => 'info'
+                        ];
+                    }
+                } catch (\Exception $e) {
+                    $message = [
+                        'title' => 'Info',
+                        'text' => 'Pembayaran sedang diproses',
+                        'icon' => 'info'
+                    ];
+                }
+            } else {
+                $message = [
+                    'title' => 'Error',
+                    'text' => 'Transaksi tidak ditemukan',
+                    'icon' => 'error'
+                ];
+            }
+        } else {
+            $message = [
+                'title' => 'Info',
+                'text' => 'Terima kasih! Pembayaran sedang diproses',
+                'icon' => 'info'
+            ];
+        }
+
+        session()->setFlashdata($message);
+        return redirect()->to('penjualan');
+    }
+
+    /**
+     * Handle redirect jika pembayaran tidak selesai
+     */
+    public function midtransUnfinish()
+    {
+        $message = [
+            'title' => 'Info',
+            'text' => 'Pembayaran belum selesai. Silakan coba lagi atau hubungi customer service.',
+            'icon' => 'info'
+        ];
+        session()->setFlashdata($message);
+        return redirect()->to('penjualan');
+    }
+
+    /**
+     * Handle redirect jika terjadi error
+     */
+    public function midtransError()
+    {
+        $message = [
+            'title' => 'Error',
+            'text' => 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.',
+            'icon' => 'error'
+        ];
+        session()->setFlashdata($message);
+        return redirect()->to('penjualan');
+    }
+
+    /**
+     * Update stok setelah pembayaran berhasil
+     */
+    private function updateStokAfterPayment($transaksi)
+    {
+        try {
+            // Cek apakah stok sudah diupdate (dengan mengecek apakah stok masih sama dengan sebelum transaksi)
+            $sampahId = $transaksi['sampah_id'];
+            $jumlahJual = $transaksi['jumlah'];
+
+            $sampah = $this->sampahModel->find($sampahId);
+            if ($sampah) {
+                $stokBaru = $sampah['satuan'] - $jumlahJual;
+                $this->sampahModel->update($sampahId, ['satuan' => $stokBaru]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error updating stock after payment: ' . $e->getMessage());
         }
     }
 }

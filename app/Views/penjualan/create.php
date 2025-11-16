@@ -84,21 +84,16 @@
                     <label class="form-label">Metode Bayar</label>
                     <select name="metode_bayar" class="form-select" id="metode_bayar" required>
                         <option value="" selected disabled>-- Pilih Metode --</option>
-                        <option value="qris">QRIS</option>
+                        <option value="midtrans">Midtrans</option>
                         <option value="tunai">Tunai</option>
                     </select>
-                </div>
-
-                <div class="col-md-4" id="upload_qris" style="display: none;">
-                    <label for="bukti_qris" class="form-label">Upload Bukti QRIS</label>
-                    <input type="file" name="bukti_qris" id="bukti_qris" class="form-control">
                 </div>
             </div>
 
             <!-- Tombol Aksi -->
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-success">
-                    Simpan
+                    Bayar
                 </button>
                 <a href="<?= base_url('penjualan') ?>" class="btn btn-secondary">
                     Batal
@@ -189,18 +184,6 @@
         }
     }
 
-    // $("#metode_bayar").on("change", function() {
-    //     let metode = $(this).find("option:selected").text();
-    //     let valMetode = metode.toLowerCase().trim()
-
-
-    //     if (valMetode == "qris") {
-    //         $("#upload_qris").show();
-    //     } else {
-    //         $("#upload_qris").hide();
-    //     }
-    // });
-
     // Validasi form sebelum submit
     $('#form_penjualan').on('submit', function(e) {
         let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0;
@@ -212,8 +195,8 @@
             return false;
         }
 
-        // Jika metode pembayaran QRIS, tampilkan loading dan redirect ke QR Code
-        if (metodeBayar === 'qris') {
+        // Jika metode pembayaran Midtrans, handle dengan AJAX dan tampilkan Snap
+        if (metodeBayar === 'midtrans') {
             e.preventDefault();
 
             // Tampilkan loading
@@ -235,25 +218,75 @@
                         // Parse JSON response
                         let data = typeof response === 'string' ? JSON.parse(response) : response;
 
-                        if (data.success) {
-                            // Redirect ke halaman QR Code
-                            window.location.href = data.redirect_url;
+                        if (data.success && data.token) {
+                            // Tampilkan Midtrans Snap popup
+                            submitBtn.html(originalText).prop('disabled', false);
+
+                            // Load Midtrans Snap JS jika belum dimuat
+                            if (typeof snap === 'undefined') {
+                                // Load script Midtrans Snap
+                                let script = document.createElement('script');
+                                <?php
+                                $midtransConfig = config('Midtrans');
+                                $snapUrl = $midtransConfig->isProduction
+                                    ? 'https://app.midtrans.com/snap/snap.js'
+                                    : 'https://app.sandbox.midtrans.com/snap/snap.js';
+                                ?>
+                                script.src = '<?= $snapUrl ?>';
+                                script.setAttribute('data-client-key', '<?= $midtransConfig->clientKey ?? "" ?>');
+                                document.body.appendChild(script);
+
+                                script.onload = function() {
+                                    snap.pay(data.token, {
+                                        onSuccess: function(result) {
+                                            console.log('success', result);
+                                            window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;
+                                        },
+                                        onPending: function(result) {
+                                            console.log('pending', result);
+                                            window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;
+                                        },
+                                        onError: function(result) {
+                                            console.log('error', result);
+                                            window.location.href = '<?= base_url('penjualan/midtrans-error') ?>';
+                                        },
+                                        onClose: function() {
+                                            console.log('customer closed the popup without finishing the payment');
+                                        }
+                                    });
+                                };
+                            } else {
+                                // Jika sudah dimuat, langsung panggil snap.pay
+                                snap.pay(data.token, {
+                                    onSuccess: function(result) {
+                                        console.log('success', result);
+                                        window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;
+                                    },
+                                    onPending: function(result) {
+                                        console.log('pending', result);
+                                        window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;
+                                    },
+                                    onError: function(result) {
+                                        console.log('error', result);
+                                        window.location.href = '<?= base_url('penjualan/midtrans-error') ?>';
+                                    },
+                                    onClose: function() {
+                                        console.log('customer closed the popup without finishing the payment');
+                                    }
+                                });
+                            }
                         } else {
-                            alert(data.message || 'Terjadi kesalahan saat menyimpan data.');
+                            alert(data.message || 'Terjadi kesalahan saat membuat transaksi Midtrans.');
                             submitBtn.html(originalText).prop('disabled', false);
                         }
                     } catch (e) {
-                        // Jika response bukan JSON, cek apakah berhasil
-                        if (response.includes('success') || response.includes('berhasil')) {
-                            alert('Data berhasil disimpan! Silakan buka halaman penjualan untuk melihat QR Code.');
-                            window.location.href = '<?= base_url('penjualan'); ?>';
-                        } else {
-                            alert('Terjadi kesalahan saat menyimpan data.');
-                            submitBtn.html(originalText).prop('disabled', false);
-                        }
+                        console.error('Error parsing response:', e);
+                        alert('Terjadi kesalahan saat memproses pembayaran.');
+                        submitBtn.html(originalText).prop('disabled', false);
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
                     alert('Terjadi kesalahan saat menyimpan data.');
                     submitBtn.html(originalText).prop('disabled', false);
                 }

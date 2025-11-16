@@ -54,7 +54,15 @@ $routes->group('penjualan', ['filter' => 'auth'], function ($routes) {
     $routes->get('qrcode-image/(:num)', 'PenjualanController::generateQrCode/$1');
     $routes->get('qrcode-simple/(:num)', 'PenjualanController::generateQrCodeSimple/$1');
     $routes->get('test-qrcode', 'PenjualanController::testQrCode');
+    // Midtrans routes
+    $routes->get('midtrans-payment', 'PenjualanController::midtransPayment');
+    $routes->get('midtrans-finish', 'PenjualanController::midtransFinish');
+    $routes->get('midtrans-unfinish', 'PenjualanController::midtransUnfinish');
+    $routes->get('midtrans-error', 'PenjualanController::midtransError');
 });
+
+// Midtrans notification (webhook) - tidak perlu auth
+$routes->post('penjualan/midtrans-notification', 'PenjualanController::midtransNotification');
 
 // Pembelian
 $routes->group('pembelian', ['filter' => 'auth'], function ($routes) {
