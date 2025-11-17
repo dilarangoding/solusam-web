@@ -23,7 +23,7 @@ function formatRupiah($number)
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted small mb-1">Total Transaksi</p>
-                    <h5 class="fw-bold"><?= $totalSemua['jumlah']; ?></h5>
+                    <h5 class="fw-bold"><?= $ringkasanBulan['jumlah']; ?></h5>
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@ function formatRupiah($number)
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted small mb-1">Total Berat Sampah</p>
-                    <h5 class="fw-bold"><?= $totalSemua['total_jml']; ?> kg</h5>
+                    <h5 class="fw-bold"><?= $ringkasanBulan['total_jml']; ?> kg</h5>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@ function formatRupiah($number)
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted small mb-1">Total Uang Masuk</p>
-                    <h5 class="fw-bold text-success"><?= formatRupiah($totalSemua['total_pendapatan']); ?></h5>
+                    <h5 class="fw-bold text-success"><?= formatRupiah($ringkasanBulan['total_pendapatan'] + $ringkasanBulan['total_keuntungan']); ?></h5>
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@ function formatRupiah($number)
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <p class="text-muted small mb-1">Total Uang Keluar</p>
-                    <h5 class="fw-bold text-danger"><?= formatRupiah($totalSemua['total_pengeluaran']); ?></h5>
+                    <h5 class="fw-bold text-danger"><?= formatRupiah($ringkasanBulan['total_pengeluaran']); ?></h5>
                 </div>
             </div>
         </div>
@@ -64,8 +64,8 @@ function formatRupiah($number)
                         <?php
 
                         foreach ($lastTransaksi as $row) {
-                            $harga = $row['jenis'] == 'in' ? $row['harga_jual'] : $row['harga_beli'];
-                            $jenis = $row['jenis'] == 'in' ? 'Penjualan' : 'Pembelian';
+                            $harga = $row['jenis'] == 'in' ? $row['harga_beli'] : $row['harga_jual'];
+                            $jenis = $row['jenis'] == 'in' ? 'Pembelian' : 'Penjualan';
                             $total = $harga * $row['jumlah'];
                         ?>
                             <li class="d-flex justify-content-between align-items-start bg-success bg-opacity-10 p-2 rounded mb-2">
