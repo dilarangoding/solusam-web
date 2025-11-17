@@ -79,7 +79,7 @@
         }).then((result) => {
             if (result.value) {
                 $.ajax({
-                        url: "<?= base_url('sampah/delete/'); ?>",
+                        url: "<?= base_url('sampah/delete'); ?>",
                         type: 'POST',
                         data: {
                             id,
