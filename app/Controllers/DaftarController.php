@@ -106,9 +106,6 @@ class DaftarController extends BaseController
                 'email' => $email,
                 'password' => $hashedPassword,
                 'role' => 2,
-                'status' => 1,
-                'google_id' => null,
-                'last_login' => null,
             ];
 
             // Simpan data user
