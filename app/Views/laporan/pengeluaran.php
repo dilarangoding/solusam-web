@@ -167,7 +167,7 @@
 
                 // // Isi data ke table
                 $.each(response, function(i, item) {
-                    let totalPendapatan = parseFloat(item.total_pendapatan) || 0;
+                    let totalPendapatan = parseFloat(item.total_pengeluaran) || 0;
                     let hargaBeli = parseFloat(item.harga_beli) || 0;
                     $('table tbody').append(`
                             <tr>
