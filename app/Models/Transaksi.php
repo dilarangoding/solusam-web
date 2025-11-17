@@ -121,12 +121,12 @@ class Transaksi extends Model
         $builder->select(
             'COUNT(t.id) as jumlah, 
             SUM(t.jumlah) as total_jml,
-            SUM(CASE WHEN t.jenis = "in" THEN (t.jumlah * s.harga_jual) ELSE 0 END) as total_pendapatan,
-            SUM(CASE WHEN t.jenis = "out" THEN (t.jumlah * s.harga_beli) ELSE 0 END) as total_pengeluaran,
+            SUM(CASE WHEN t.jenis = "out" THEN (t.jumlah * s.harga_jual) ELSE 0 END) as total_pendapatan,
+            SUM(CASE WHEN t.jenis = "in" THEN (t.jumlah * s.harga_beli) ELSE 0 END) as total_pengeluaran,
             SUM(
             CASE 
-                WHEN t.jenis = "in"  THEN (t.jumlah * s.harga_jual)
-                WHEN t.jenis = "out" THEN -(t.jumlah * s.harga_beli)
+                WHEN t.jenis = "out"  THEN (t.jumlah * s.harga_jual)
+                WHEN t.jenis = "in" THEN -(t.jumlah * s.harga_beli)
                 ELSE 0 
             END
             ) as total_keuntungan
@@ -151,12 +151,12 @@ class Transaksi extends Model
         $builder->select(
             'COUNT(t.id) as jumlah, 
             SUM(t.jumlah) as total_jml,
-            SUM(CASE WHEN t.jenis = "in" THEN (t.jumlah * s.harga_jual) ELSE 0 END) as total_pendapatan,
-            SUM(CASE WHEN t.jenis = "out" THEN (t.jumlah * s.harga_beli) ELSE 0 END) as total_pengeluaran,
+            SUM(CASE WHEN t.jenis = "out" THEN (t.jumlah * s.harga_jual) ELSE 0 END) as total_pendapatan,
+            SUM(CASE WHEN t.jenis = "in" THEN (t.jumlah * s.harga_beli) ELSE 0 END) as total_pengeluaran,
             SUM(
             CASE 
-                WHEN t.jenis = "in"  THEN (t.jumlah * s.harga_jual)
-                WHEN t.jenis = "out" THEN -(t.jumlah * s.harga_beli)
+                WHEN t.jenis = "out"  THEN (t.jumlah * s.harga_jual)
+                WHEN t.jenis = "in" THEN -(t.jumlah * s.harga_beli)
                 ELSE 0 
             END
             ) as total_keuntungan
