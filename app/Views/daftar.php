@@ -5,14 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title; ?></title>
+    <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.35.0/dist/tabler-icons.min.css">
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/datatable-bs5/bootstrap.min.css') ?>">
 </head>
 
 <body class="bg-light d-flex align-items-center justify-content-center min-vh-100 my-5">
 
+    <!-- Card utama form registrasi -->
     <div class="card shadow-sm rounded-4 p-4" style="max-width: 500px; width: 100%;">
-        <!-- Logo -->
+        <!-- Logo dan judul -->
         <div class="text-center mb-4">
             <img src="<?= base_url('assets/img/logosolus.png') ?>" 
                 alt="Logo Solusam"
@@ -28,84 +31,89 @@
                 <strong>Terdapat kesalahan:</strong>
                 <ul class="mb-0 ps-3">
                     <?php foreach (session()->getFlashdata('errors-daftar') as $error) : ?>
-                        <li><?= esc($error) ?></li>
+                        <li><?= esc($error) ?></li> <!-- Escape output untuk keamanan -->
                     <?php endforeach ?>
                 </ul>
             </div>
         <?php endif; ?>
 
-        <!-- Form -->
+        <!-- Form registrasi -->
         <form action="<?= base_url('register') ?>" method="POST">
+            <!-- Username -->
             <div class="mb-3">
                 <label class="form-label">Username</label>
                 <input type="text" class="form-control" name="username" placeholder="Masukkan username"
-                    value="<?= old('username') ?>">
+                    value="<?= old('username') ?>"> <!-- old() untuk mempertahankan input lama jika error -->
             </div>
-                        
+            
+            <!-- Email -->
             <div class="mb-3">
                 <label class="form-label">Email</label>
                 <input type="email" class="form-control" name="email" placeholder="Masukkan email"
                     value="<?= old('email') ?>">
             </div>
 
+            <!-- Nama Lengkap -->
             <div class="mb-3">
                 <label class="form-label">Nama Lengkap</label>
                 <input type="text" class="form-control" name="nama_lengkap" placeholder="Masukkan nama lengkap"
                     value="<?= old('nama_lengkap') ?>">
             </div>
 
+            <!-- No Telp -->
             <div class="mb-3">
                 <label class="form-label">No Telp</label>
                 <input type="text" class="form-control" name="no_telp" placeholder="Masukkan no telepon"
                     value="<?= old('no_telp') ?>">
             </div>
 
+            <!-- Alamat -->
             <div class="mb-3">
                 <label class="form-label">Alamat</label>
                 <input type="text" class="form-control" name="alamat" placeholder="Masukkan alamat"
                     value="<?= old('alamat') ?>">
             </div>
 
+            <!-- Jenis Usaha -->
             <div class="mb-3">
                 <label class="form-label">Jenis Usaha</label>
                 <input type="text" class="form-control" name="jenis_usaha" placeholder="Masukkan jenis usaha"
                     value="<?= old('jenis_usaha') ?>">
             </div>
 
+            <!-- Password -->
             <div class="mb-3">
                 <label class="form-label">Password</label>
                 <div class="input-group">
                     <input type="password" class="form-control" name="password" id="password" placeholder="Masukkan password">
                     <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                        <i class="ti ti-eye-off"></i>
+                        <i class="ti ti-eye-off"></i> <!-- Icon mata untuk toggle -->
                     </button>
                 </div>
             </div>
 
+            <!-- Konfirmasi Password -->
             <div class="mb-3">
                 <label class="form-label">Konfirmasi Password</label>
                 <div class="input-group">
                     <input type="password" class="form-control" name="konfirmasi_password" id="confirmPassword" placeholder="Ulangi password">
                     <button class="btn btn-outline-secondary" type="button" id="togglePassword2">
-                        <i class="ti ti-eye-off"></i>
+                        <i class="ti ti-eye-off"></i> <!-- Icon mata untuk toggle -->
                     </button>
                 </div>
             </div>
 
+            <!-- Tombol Daftar -->
             <button type="submit" class="btn btn-success w-100">Daftar</button>
-            <!-- Tombol Daftar Google -->
-<a href="<?= base_url('auth/google'); ?>" 
-class="w-100 mt-3 d-flex align-items-center justify-content-center"
-style="background-color: #fff; border: 1px solid #ccc; border-radius: 6px; text-decoration: none; padding: 8px;">
 
-    <!-- Logo Google -->
-    <img src="https://developers.google.com/identity/images/g-logo.png" 
-    alt="Google Logo" width="20" class="me-2">
-    
-    <!-- Teks -->
-    <span style="color: #555; font-weight: 500;">Daftar dengan Google</span>
-</a>
-       
+            <!-- Tombol Daftar Google -->
+            <a href="<?= base_url('auth/google'); ?>" 
+               class="w-100 mt-3 d-flex align-items-center justify-content-center"
+               style="background-color: #fff; border: 1px solid #ccc; border-radius: 6px; text-decoration: none; padding: 8px;">
+                <img src="https://developers.google.com/identity/images/g-logo.png" 
+                     alt="Google Logo" width="20" class="me-2">
+                <span style="color: #555; font-weight: 500;">Daftar dengan Google</span>
+            </a>
         </form>
 
         <!-- Sudah punya akun -->
@@ -117,6 +125,7 @@ style="background-color: #fff; border: 1px solid #ccc; border-radius: 6px; text-
         </div>
     </div>
 
+    <!-- Script toggle password -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const togglePassword = document.querySelector('#togglePassword');
@@ -124,13 +133,15 @@ style="background-color: #fff; border: 1px solid #ccc; border-radius: 6px; text-
             const togglePassword2 = document.querySelector('#togglePassword2');
             const confirmInput = document.querySelector('#confirmPassword');
 
+            // Toggle Password pertama
             togglePassword.addEventListener('click', function() {
                 const type = passwordInput.type === 'password' ? 'text' : 'password';
                 passwordInput.type = type;
-                this.querySelector('i').classList.toggle('ti-eye');
+                this.querySelector('i').classList.toggle('ti-eye'); // Ganti icon
                 this.querySelector('i').classList.toggle('ti-eye-off');
             });
 
+            // Toggle Konfirmasi Password
             togglePassword2.addEventListener('click', function() {
                 const type = confirmInput.type === 'password' ? 'text' : 'password';
                 confirmInput.type = type;
@@ -140,6 +151,5 @@ style="background-color: #fff; border: 1px solid #ccc; border-radius: 6px; text-
         });
     </script>
 </body>
-
 
 </html>
