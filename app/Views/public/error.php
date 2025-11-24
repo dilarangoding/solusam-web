@@ -1,67 +1,88 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html> <!-- Deklarasi dokumen HTML -->
+<html lang="id"> <!-- Bahasa dokumen Indonesia -->
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title; ?></title>
+    <meta charset="UTF-8"> <!-- Set karakter encoding -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsif pada semua device -->
+    <title><?= $title; ?></title> <!-- Judul halaman dinamis dari controller -->
+
+    <!-- Import Bootstrap 5 untuk styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Import icon Tabler (SVG sprite) -->
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons@1.0.0/icons-sprite.svg" rel="stylesheet">
+
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        body { /* Style umum body halaman error */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Background gradient */
+            min-height: 100vh; /* Tinggi minimal layar penuh */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font modern */
         }
 
-        .error-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .error-container { /* Container utama untuk center vertikal & horizontal */
+            min-height: 100vh; /* Full layar */
+            display: flex; /* Flexbox */
+            align-items: center; /* Posisi tengah vertikal */
+            justify-content: center; /* Posisi tengah horizontal */
         }
 
-        .error-card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        .error-card { /* Card blur kaca transparan */
+            border: none; /* Hilangkan border */
+            border-radius: 20px; /* Rounded */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* Shadow lembut */
+            background: rgba(255, 255, 255, 0.95); /* Putih agak transparan */
+            backdrop-filter: blur(10px); /* Efek kaca */
         }
 
-        .error-icon {
-            font-size: 5rem;
-            color: #dc3545;
+        .error-icon { /* Style icon error */
+            font-size: 5rem; /* Ukuran besar */
+            color: #dc3545; /* Warna merah (Bootstrap danger) */
         }
     </style>
 </head>
 
 <body>
-    <div class="error-container">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="error-card p-5 text-center">
-                        <div class="error-icon mb-4">
-                            <i class="ti ti-alert-triangle"></i>
+    <div class="error-container"> <!-- Wrapper utama agar rapi di tengah -->
+        <div class="container"> <!-- Bootstrap container -->
+
+            <div class="row justify-content-center"> <!-- Baris dengan konten di tengah -->
+                <div class="col-md-6"> <!-- Ukuran card di medium ke atas -->
+
+                    <div class="error-card p-5 text-center"> <!-- Card transparan dengan padding -->
+
+                        <div class="error-icon mb-4"> <!-- Div icon besar -->
+                            <i class="ti ti-alert-triangle"></i> <!-- Icon warning Tabler -->
                         </div>
-                        <h1 class="text-danger fw-bold mb-3"><?= $title; ?></h1>
-                        <p class="text-muted fs-5 mb-4"><?= $message; ?></p>
+
+                        <h1 class="text-danger fw-bold mb-3">
+                            <?= $title; ?> <!-- Judul pesan error -->
+                        </h1>
+
+                        <p class="text-muted fs-5 mb-4">
+                            <?= $message; ?> <!-- Pesan error dinamis -->
+                        </p>
+
+                        <!-- Tombol aksi -->
                         <div class="mt-4">
-                            <button onclick="history.back()" class="btn btn-primary me-2">
-                                <i class="ti ti-arrow-left me-2"></i>
+
+                            <button onclick="history.back()" class="btn btn-primary me-2"> <!-- Kembali ke halaman sebelumnya -->
+                                <i class="ti ti-arrow-left me-2"></i> <!-- Icon arrow back -->
                                 Kembali
                             </button>
-                            <button onclick="window.close()" class="btn btn-outline-secondary">
-                                <i class="ti ti-x me-2"></i>
+
+                            <button onclick="window.close()" class="btn btn-outline-secondary"> <!-- Menutup halaman -->
+                                <i class="ti ti-x me-2"></i> <!-- Icon close -->
                                 Tutup
                             </button>
+
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    </div> <!-- End of error-card -->
+
+                </div> <!-- End col -->
+            </div> <!-- End row -->
+
+        </div> <!-- End container -->
+    </div> <!-- End error-container -->
 </body>
 
-</html>
+</html> <!-- Penutup dokumen HTML -->
