@@ -1,75 +1,74 @@
-<?= $this->extend('template/index'); ?>
-<?= $this->section('content'); ?>
+<?= $this->extend('template/index'); ?> // Memanggil template utama
+<?= $this->section('content'); ?> // Membuka section konten utama
 
 
 
-<div class="card border-success mb-4 mt-4">
-    <div class="card-header bg-success bg-opacity-10 text-success fw-bold">
-        + Form <?= $title; ?>
+<div class="card border-success mb-4 mt-4"> // Card container utama
+    <div class="card-header bg-success bg-opacity-10 text-success fw-bold"> // Header card dengan background hijau
+        + Form <?= $title; ?> // Judul form berdasarkan variabel title
     </div>
-    <div class="card-body">
-        <form action="<?= base_url('penjualan/store') ?>" method="POST" enctype="multipart/form-data" id="form_penjualan">
-            <div class="row g-3">
+    <div class="card-body"> // Body card
+        <form action="<?= base_url('penjualan/store') ?>" method="POST" enctype="multipart/form-data" id="form_penjualan"> // Form submit menuju penjualan/store
+            <div class="row g-3"> // Grid dengan gap 3
+
                 <div class="col-md-4">
-                    <label class="form-label">Pilih Tanggal</label>
+                    <label class="form-label">Pilih Tanggal</label> // Label tanggal
                     <input
-                        type="date"
-                        name="tanggal"
+                        type="date" // Input tanggal
+                        name="tanggal" // Name input tanggal
                         class="form-control"
-                        required>
+                        required> // Wajib diisi
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Nama Sampah</label>
-                    <select name="nama_sampah" class="form-select" id="nama_sampah" required>
+                    <select name="nama_sampah" class="form-select" id="nama_sampah" required> // Dropdown pilih sampah
                         <option value="" selected disabled>-- Pilih Sampah --</option>
-                        <?php foreach ($sampah as $row) : ?>
-                            <option value="<?= $row['id'] ?>">
-                                <?= $row['nama_sampah'] ?>
+                        <?php foreach ($sampah as $row) : ?> // Loop data sampah
+                            <option value="<?= $row['id'] ?>"> // Value ID sampah
+                                <?= $row['nama_sampah'] ?> // Nama sampah yang ditampilkan
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
 
-
                 <div class="col-md-4">
                     <label class="form-label">Harga</label>
                     <input
-                        type="number"
+                        type="number" // Input harga
                         name="harga"
                         min="0"
                         placeholder="0"
                         class="form-control"
-                        id="harga"
-                        readonly
+                        id="harga" // Akan otomatis terisi via AJAX
+                        readonly // Tidak bisa diubah manual
                         required>
                 </div>
 
-
                 <div class="col-md-4">
-                    <label class="form-label">Jumlah (kg)</label>
+                    <label class="form-label">Jumlah (kg)</label> // Input jumlah sampah yang dijual
                     <input
                         type="number"
                         min="1"
                         name="jumlah_jual"
                         class="form-control"
                         id="jumlah_jual"
-                        onkeyup="jumlah()"
+                        onkeyup="jumlah()" // Akan hitung total harga + validasi stok
                         required>
-                    <div class="form-text" id="stok_info" style="display: none;">
+
+                    <div class="form-text" id="stok_info" style="display: none;"> // Informasi stok tersisa
                         <span class="text-muted">Stok tersedia setelah penjualan: </span>
-                        <span id="stok_tersedia" class="fw-bold text-primary">0</span>
+                        <span id="stok_tersedia" class="fw-bold text-primary">0</span> // Visual stok sisa
                         <span class="text-muted"> kg</span>
                     </div>
-                    <div class="invalid-feedback" id="stok_error" style="display: none;">
+
+                    <div class="invalid-feedback" id="stok_error" style="display: none;"> // Pesan error jika stok tidak cukup
                         Jumlah melebihi stok tersedia!
                     </div>
                 </div>
 
-
-
                 <div class="col-md-4">
-                    <label class="form-label">Total Harga</label>
+                    <label class="form-label">Total Harga</label> // Input total harga otomatis
                     <input
                         type="number"
                         name="total_harga"
@@ -81,22 +80,21 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Metode Bayar</label>
+                    <label class="form-label">Metode Bayar</label> // Pilihan metode bayar
                     <select name="metode_bayar" class="form-select" id="metode_bayar" required>
                         <option value="" selected disabled>-- Pilih Metode --</option>
-                        <option value="midtrans">Midtrans</option>
-                        <option value="tunai">Tunai</option>
+                        <option value="midtrans">Midtrans</option> // Pembayaran online
+                        <option value="tunai">Tunai</option> // Pembayaran cash
                     </select>
                 </div>
             </div>
 
-            <!-- Tombol Aksi -->
-            <div class="mt-4 d-flex gap-2">
+            <div class="mt-4 d-flex gap-2"> // Tombol aksi
                 <button type="submit" class="btn btn-success">
-                    Bayar
+                    Bayar // Tombol submit
                 </button>
                 <a href="<?= base_url('penjualan') ?>" class="btn btn-secondary">
-                    Batal
+                    Batal // Tombol batal
                 </a>
             </div>
         </form>
@@ -104,39 +102,35 @@
 </div>
 
 
-<?= $this->endSection(); ?>
+<?= $this->endSection(); ?> // Menutup section konten
 
-<?= $this->section('js'); ?>
+<?= $this->section('js'); ?> // Membuka section JavaScript
 <script>
     // Variabel global untuk menyimpan stok awal
     let stokAwal = 0;
 
-    $('#nama_sampah').change(function() {
-        let sampahId = $(this).val();
+    $('#nama_sampah').change(function() { // Event ketika dropdown sampah berubah
+        let sampahId = $(this).val(); // Ambil ID sampah
 
         if (sampahId) {
             $.ajax({
-                url: "<?= base_url('penjualan/sampah-ajax') ?>",
+                url: "<?= base_url('penjualan/sampah-ajax') ?>", // Endpoint AJAX untuk ambil harga & stok
                 type: "POST",
-                data: {
-                    id: sampahId
-                },
-                success: function(response) {
-                    $('#harga').val(response.harga_jual);
+                data: { id: sampahId },
+                success: function(response) { // Jika berhasil
+                    $('#harga').val(response.harga_jual); // Set harga jual otomatis
 
-                    // Simpan stok awal dan tampilkan informasi stok
-                    stokAwal = parseFloat(response.stok_tersedia) || 0;
-                    $('#stok_tersedia').text(stokAwal);
-                    $('#stok_info').show();
+                    stokAwal = parseFloat(response.stok_tersedia) || 0; // Simpan stok awal
+                    $('#stok_tersedia').text(stokAwal); // Tampilkan stok
+                    $('#stok_info').show(); // Tampilkan info stok
 
-                    // Reset validasi stok
+                    // Reset input dan validasi
                     $('#jumlah_jual').removeClass('is-invalid');
                     $('#stok_error').hide();
                     $('#jumlah_jual').val('');
                     $('#total_harga').val('');
 
-                    // Reset warna stok
-                    $('#stok_tersedia').removeClass('text-danger').addClass('text-primary');
+                    $('#stok_tersedia').removeClass('text-danger').addClass('text-primary'); // Reset warna stok
                 },
                 error: function(xhr, status, error) {
                     console.error(error);
@@ -144,7 +138,7 @@
                 }
             });
         } else {
-            // Reset semua field jika tidak ada sampah yang dipilih
+            // Reset jika tidak memilih sampah
             $('#harga').val('');
             $('#jumlah_jual').val('');
             $('#total_harga').val('');
@@ -155,123 +149,113 @@
         }
     });
 
-    function jumlah() {
-        let harga = parseFloat($('#harga').val()) || 0;
-        let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0;
+    function jumlah() { // Fungsi untuk hitung total harga & validasi stok
+        let harga = parseFloat($('#harga').val()) || 0; // Ambil harga
+        let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0; // Ambil jumlah jual
 
-        let totalHarga = harga * jumlahJual;
-        $('#total_harga').val(totalHarga);
+        let totalHarga = harga * jumlahJual; // Hitung total harga
+        $('#total_harga').val(totalHarga); // Set total harga
 
-        // Hitung stok tersedia setelah dikurangi jumlah yang akan dijual
-        let stokSetelahJual = stokAwal - jumlahJual;
+        let stokSetelahJual = stokAwal - jumlahJual; // Hitung sisa stok
+        $('#stok_tersedia').text(stokSetelahJual); // Update UI stok
 
-        // Update tampilan stok tersedia
-        $('#stok_tersedia').text(stokSetelahJual);
-
-        // Validasi stok dan ubah warna
+        // Validasi stok
         if (jumlahJual > stokAwal) {
-            $('#jumlah_jual').addClass('is-invalid');
-            $('#stok_error').show();
-            $('#stok_tersedia').removeClass('text-primary').addClass('text-danger');
+            $('#jumlah_jual').addClass('is-invalid'); // Kasih warna merah input
+            $('#stok_error').show(); // Tampilkan pesan error
+            $('#stok_tersedia').removeClass('text-primary').addClass('text-danger'); // Warna merah di stok
         } else if (jumlahJual > 0) {
             $('#jumlah_jual').removeClass('is-invalid');
             $('#stok_error').hide();
-            $('#stok_tersedia').removeClass('text-primary').addClass('text-warning');
+            $('#stok_tersedia').removeClass('text-primary').addClass('text-warning'); // Warna kuning jika masih aman
         } else {
             $('#jumlah_jual').removeClass('is-invalid');
             $('#stok_error').hide();
-            $('#stok_tersedia').removeClass('text-warning text-danger').addClass('text-primary');
+            $('#stok_tersedia').removeClass('text-warning text-danger').addClass('text-primary'); // Reset ke biru
         }
     }
 
-    // Validasi form sebelum submit
+    // Validasi sebelum submit form
     $('#form_penjualan').on('submit', function(e) {
         let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0;
         let metodeBayar = $('#metode_bayar').val();
 
-        if (jumlahJual > stokAwal) {
+        if (jumlahJual > stokAwal) { // Jika stok tidak cukup
             e.preventDefault();
-            alert('Jumlah yang dijual (' + jumlahJual + ' kg) melebihi stok tersedia (' + stokAwal + ' kg). Silakan periksa kembali.');
+            alert(
+                'Jumlah yang dijual (' + jumlahJual +
+                ' kg) melebihi stok tersedia (' + stokAwal +
+                ' kg). Silakan periksa kembali.'
+            );
             return false;
         }
 
-        // Jika metode pembayaran Midtrans, handle dengan AJAX dan tampilkan Snap
+        // Jika metode midtrans → proses pembayaran online
         if (metodeBayar === 'midtrans') {
-            e.preventDefault();
+            e.preventDefault(); // Stop submit default
 
-            // Tampilkan loading
-            let submitBtn = $(this).find('button[type="submit"]');
-            let originalText = submitBtn.html();
-            submitBtn.html('<i class="spinner-border spinner-border-sm me-2"></i>Memproses...').prop('disabled', true);
+            let submitBtn = $(this).find('button[type="submit"]'); // Tombol submit
+            let originalText = submitBtn.html(); // Simpan teks asli
+            submitBtn.html('<i class="spinner-border spinner-border-sm me-2"></i>Memproses...').prop('disabled', true); // Loading
 
-            // Submit form via AJAX
-            let formData = new FormData(this);
+            let formData = new FormData(this); // Ambil semua input form
 
             $.ajax({
-                url: $(this).attr('action'),
+                url: $(this).attr('action'), // Endpoint penjualan/store
                 type: 'POST',
                 data: formData,
-                processData: false,
+                processData: false, // Untuk FormData harus false
                 contentType: false,
                 success: function(response) {
                     try {
-                        // Parse JSON response
-                        let data = typeof response === 'string' ? JSON.parse(response) : response;
+                        let data = typeof response === 'string' ? JSON.parse(response) : response; // Parse JSON
 
-                        if (data.success && data.token) {
-                            // Tampilkan Midtrans Snap popup
-                            submitBtn.html(originalText).prop('disabled', false);
+                        if (data.success && data.token) { // Jika token midtrans diterima
+                            submitBtn.html(originalText).prop('disabled', false); // Kembalikan tombol
 
-                            // Load Midtrans Snap JS jika belum dimuat
-                            if (typeof snap === 'undefined') {
-                                // Load script Midtrans Snap
+                            if (typeof snap === 'undefined') { // Jika Snap belum ada di halaman
                                 let script = document.createElement('script');
+
                                 <?php
                                 $midtransConfig = config('Midtrans');
                                 $snapUrl = $midtransConfig->isProduction
                                     ? 'https://app.midtrans.com/snap/snap.js'
                                     : 'https://app.sandbox.midtrans.com/snap/snap.js';
                                 ?>
-                                script.src = '<?= $snapUrl ?>';
+
+                                script.src = '<?= $snapUrl ?>'; // Load script Snap
                                 script.setAttribute('data-client-key', '<?= $midtransConfig->clientKey ?? "" ?>');
                                 document.body.appendChild(script);
 
                                 script.onload = function() {
-                                    snap.pay(data.token, {
+                                    snap.pay(data.token, { // Jalankan popup Snap
                                         onSuccess: function(result) {
-                                            console.log('success', result);
                                             window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;
                                         },
                                         onPending: function(result) {
-                                            console.log('pending', result);
                                             window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;
                                         },
-                                        onError: function(result) {
-                                            console.log('error', result);
+                                        onError: function() {
                                             window.location.href = '<?= base_url('penjualan/midtrans-error') ?>';
                                         },
                                         onClose: function() {
-                                            console.log('customer closed the popup without finishing the payment');
+                                            console.log('Popup pembayaran ditutup.');
                                         }
                                     });
                                 };
                             } else {
-                                // Jika sudah dimuat, langsung panggil snap.pay
-                                snap.pay(data.token, {
+                                snap.pay(data.token, { // Jika Snap sudah ada
                                     onSuccess: function(result) {
-                                        console.log('success', result);
                                         window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;
                                     },
                                     onPending: function(result) {
-                                        console.log('pending', result);
                                         window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;
                                     },
-                                    onError: function(result) {
-                                        console.log('error', result);
+                                    onError: function() {
                                         window.location.href = '<?= base_url('penjualan/midtrans-error') ?>';
                                     },
                                     onClose: function() {
-                                        console.log('customer closed the popup without finishing the payment');
+                                        console.log('Popup pembayaran ditutup.');
                                     }
                                 });
                             }
@@ -294,4 +278,4 @@
         }
     });
 </script>
-<?= $this->endSection(); ?>
+<?= $this->endSection(); ?> // Menutup section JS
