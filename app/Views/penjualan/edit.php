@@ -1,104 +1,102 @@
-<?= $this->extend('template/index'); ?>
-<?= $this->section('content'); ?>
+<?= $this->extend('template/index'); ?> // Memanggil template utama
+<?= $this->section('content'); ?> // Membuka section konten halaman
 
 
 
-<div class="card border-success mb-4 mt-4">
-    <div class="card-header bg-success bg-opacity-10 text-success fw-bold">
-        + Form <?= $title; ?>
+<div class="card border-success mb-4 mt-4"> // Card pembungkus form dengan border hijau
+    <div class="card-header bg-success bg-opacity-10 text-success fw-bold"> // Header card dengan background hijau transparan
+        + Form <?= $title; ?> // Menampilkan judul form secara dinamis
     </div>
-    <div class="card-body">
-        <form action="<?= base_url('penjualan/store') ?>" method="POST">
-            <div class="row g-3">
+    <div class="card-body"> // Bagian isi card
+        <form action="<?= base_url('penjualan/store') ?>" method="POST"> // Form submit ke route penjualan/store (POST)
+            <div class="row g-3"> // Grid spacing antar elemen form
                 <input
-                    type="hidden"
+                    type="hidden" // Input hidden untuk menyimpan ID (edit)
                     name="id"
                     class="form-control"
-                    required
-                    value="<?= $data['id'] ?>">
+                    required // Wajib diisi
+                    value="<?= $data['id'] ?>"> // Nilai ID dari dataset yang sedang diedit
 
-                <div class="col-md-4">
-                    <label class="form-label">Pilih Tanggal</label>
+                <div class="col-md-4"> // Kolom untuk tanggal
+                    <label class="form-label">Pilih Tanggal</label> // Label field tanggal
                     <input
-                        type="date"
+                        type="date" // Input date
                         name="tanggal"
                         class="form-control"
-                        value="<?= $data['tanggal'] ?>"
-                        required>
+                        value="<?= $data['tanggal'] ?>" // Nilai tanggal dari data edit
+                        required> // Wajib diisi
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label">Nama Sampah</label>
-                    <select name="nama_sampah" class="form-select" id="nama_sampah" required>
-                        <option value="" selected disabled>-- Pilih Sampah --</option>
-                        <?php foreach ($sampah as $row) :
-                            $selected  = $row['id'] == $data['sampah_id'] ? 'selected' : '';
+                <div class="col-md-4"> // Kolom nama sampah
+                    <label class="form-label">Nama Sampah</label> // Label field
+                    <select name="nama_sampah" class="form-select" id="nama_sampah" required> // Dropdown sampah
+                        <option value="" selected disabled>-- Pilih Sampah --</option> // Placeholder option
+                        <?php foreach ($sampah as $row) : // Loop data sampah
+                            $selected  = $row['id'] == $data['sampah_id'] ? 'selected' : ''; // Cek apakah data yang sedang diedit
                         ?>
-                            <option value="<?= $row['id'] ?>" <?= $selected ?>>
-                                <?= $row['nama_sampah'] ?>
+                            <option value="<?= $row['id'] ?>" <?= $selected ?>> // Isi value ID dan tentukan selected
+                                <?= $row['nama_sampah'] ?> // Tampilkan nama sampah
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
 
 
-                <div class="col-md-4">
-                    <label class="form-label">Harga</label>
+                <div class="col-md-4"> // Kolom harga
+                    <label class="form-label">Harga</label> // Label harga
                     <input
-                        type="number"
+                        type="number" // Input angka
                         name="harga"
                         min="0"
                         placeholder="0"
                         class="form-control"
-                        id="harga"
-                        readonly
+                        id="harga" // ID untuk JS
+                        readonly // Tidak bisa diubah manual
                         required>
                 </div>
 
 
-                <div class="col-md-4">
-                    <label class="form-label">Jumlah (kg)</label>
+                <div class="col-md-4"> // Kolom jumlah jual
+                    <label class="form-label">Jumlah (kg)</label> // Label field
                     <input
-                        type="number"
-                        min="1"
+                        type="number" // Input angka
+                        min="1" // Minimal 1
                         name="jumlah_jual"
                         class="form-control"
                         id="jumlah_jual"
-                        value="<?= $data['jumlah'] ?>"
-                        onkeyup="jumlah()"
+                        value="<?= $data['jumlah'] ?>" // Nilai awal dari database
+                        onkeyup="jumlah()" // Jalankan fungsi hitung total saat user mengetik
                         required>
                 </div>
 
-                
-
-                <div class="col-md-4">
-                    <label class="form-label">Total Harga</label>
+                <div class="col-md-4"> // Kolom total harga
+                    <label class="form-label">Total Harga</label> // Label
                     <input
-                        type="number"
+                        type="number" // Input angka
                         name="total_harga"
                         min="0"
                         placeholder="0"
                         class="form-control"
-                        id="total_harga"
+                        id="total_harga" // ID digunakan JS
                         required>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label">Metode Bayar</label>
-                    <select name="metode_bayar" class="form-select" id="metode_bayar" required>
-                        <option value="" selected disabled>-- Pilih Metode --</option>
-                        <option value="qris">QRIS</option>
-                        <option value="tunai">Tunai</option>
+                <div class="col-md-4"> // Kolom metode bayar
+                    <label class="form-label">Metode Bayar</label> // Label
+                    <select name="metode_bayar" class="form-select" id="metode_bayar" required> // Dropdown metode pembayaran
+                        <option value="" selected disabled>-- Pilih Metode --</option> // Placeholder
+                        <option value="qris">QRIS</option> // Opsi QRIS
+                        <option value="tunai">Tunai</option> // Opsi tunai
                     </select>
                 </div>
             </div>
 
             <!-- Tombol Aksi -->
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-success">
+            <div class="mt-4 d-flex gap-2"> // Container tombol aksi
+                <button type="submit" class="btn btn-success"> // Tombol submit update
                     Update
                 </button>
-                <a href="<?= base_url('penjualan') ?>" class="btn btn-secondary">
+                <a href="<?= base_url('penjualan') ?>" class="btn btn-secondary"> // Tombol batal kembali ke halaman penjualan
                     Batal
                 </a>
             </div>
@@ -107,46 +105,45 @@
 </div>
 
 
-<?= $this->endSection(); ?>
+<?= $this->endSection(); ?> // Menutup section konten
 
-<?= $this->section('js'); ?>
+<?= $this->section('js'); ?> // Membuka section JavaScript
 <script>
-    let idsampah = '<?= $data['sampah_id'] ?>';
-    hargaSampah(idsampah);
+    let idsampah = '<?= $data['sampah_id'] ?>'; // Ambil ID sampah yang sedang diedit
+    hargaSampah(idsampah); // Auto load harga saat halaman dibuka
 
 
-    $('#nama_sampah').change(function() {
-        let id = $(this).val();
+    $('#nama_sampah').change(function() { // Event ketika dropdown sampah berubah
+        let id = $(this).val(); // Ambil ID sampah
 
-        hargaSampah(id)
+        hargaSampah(id); // Panggil function ambil harga
     });
 
-    function hargaSampah(id) {
+    function hargaSampah(id) { // Function AJAX ambil harga jual sampah
         $.ajax({
-            url: "<?= base_url('penjualan/sampah-ajax') ?>",
-            type: "POST",
+            url: "<?= base_url('penjualan/sampah-ajax') ?>", // Route untuk ambil data harga
+            type: "POST", // Method POST
             data: {
-                id
+                id // Kirim ID sampah
             },
-            success: function(response) {
-                $('#harga').val(response.harga_jual);
-                jumlah()
-
+            success: function(response) { // Jika berhasil
+                $('#harga').val(response.harga_jual); // Set nilai harga jual
+                jumlah(); // Hitung ulang total
             },
-            error: function(xhr, status, error) {
-                console.error(error);
-                alert('Terjadi kesalahan saat mengambil data harga.');
+            error: function(xhr, status, error) { // Jika error AJAX
+                console.error(error); // Log error
+                alert('Terjadi kesalahan saat mengambil data harga.'); // Tampilkan alert error
             }
         });
     }
 
-    function jumlah() {
-        let harga = parseFloat($('#harga').val()) || 0;
-        let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0;
+    function jumlah() { // Function hitung total harga
+        let harga = parseFloat($('#harga').val()) || 0; // Ambil harga, default 0
+        let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0; // Ambil jumlah, default 0
 
-        let totalHarga = harga * jumlahJual;
+        let totalHarga = harga * jumlahJual; // Rumus total
 
-        $('#total_harga').val(totalHarga);
+        $('#total_harga').val(totalHarga); // Set hasil total ke input
     }
 </script>
-<?= $this->endSection(); ?>
+<?= $this->endSection(); ?> // Menutup section JS
