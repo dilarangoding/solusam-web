@@ -39,6 +39,32 @@ class AuthController extends BaseController
     {
         return redirect()->to($this->googleClient->createAuthUrl());
     }
+    
+     private function generateUniqueUsername($email)
+    {
+        // Ambil bagian sebelum @
+        $baseUsername = explode('@', $email)[0];
+        $baseUsername = strtolower($baseUsername);
+        
+        // Potong jika lebih dari 15 karakter
+        if (strlen($baseUsername) > 15) {
+            $baseUsername = substr($baseUsername, 0, 15);
+        }
+        
+        // Cek apakah sudah ada
+        $username = $baseUsername;
+        $counter = 1;
+        
+        while ($this->usersModel->where('username', $username)->first()) {
+            // Jika sudah ada, tambahkan angka
+            $suffix = (string)$counter;
+            $maxLength = 15 - strlen($suffix);
+            $username = substr($baseUsername, 0, $maxLength) . $suffix;
+            $counter++;
+        }
+        
+        return $username;
+    }
 
     // Callback setelah login Google
     public function handleGoogleCallback()
@@ -93,17 +119,21 @@ class AuthController extends BaseController
         $user = $this->usersModel->where('id', $existingUser['id'])->first();
    } else {
     // Jika user belum ada sama sekali → daftarkan otomatis
+    
+    // ✅ PERBAIKAN: Generate username DULU sebelum digunakan
+    $username = $this->generateUniqueUsername($userInfo->email);
 
     // Generate kode_user baru
     $kodeBaru = $this->usersModel->generateKode($userInfo->email);
 
     $newUserData = [
         'kode_user' => $kodeBaru, // ✅ Tambahkan ini
-        'username'  => $userInfo->email,
+        'username'  => $username,
         'email'     => $userInfo->email,
         'google_id' => $userInfo->id,
         'role'      => 2,  // Role default (ubah sesuai kebutuhanmu)
-        'status'    => 1   // Aktif secara default
+        'status'    => 1,   // Aktif secara default
+        'auth_type' => 'google' 
     ];
 
     log_message('debug', 'User baru akan dibuat: ' . json_encode($newUserData));
@@ -116,31 +146,35 @@ class AuthController extends BaseController
 
 }
 
- $clientModel = new \App\Models\Client();
-        $client = $clientModel->where('user_id', $user['id'])->first();
+$clientModel = new \App\Models\Client();
 
-        if (!$client) {
-            $clientId = $clientModel->insert([
-                'user_id'      => $user['id'],
-                'nama_lengkap' => $userInfo->name ?? $user['username'],
-                'no_telp'      => null,
-                'alamat'       => null,
-                'jenis_usaha'  => null,
-            ]);
-            $client = $clientModel->find($clientId);
-        }
+// cari PROFIL USER saja
+$client = $clientModel
+    ->where('user_id', $user['id'])
+    ->where('client_id', null)
+    ->first();
 
-        
+if (!$client) {
+    $clientId = $clientModel->insert([
+        'user_id'      => $user['id'],
+        'nama_lengkap' => $userInfo->name ?? $user['username'],
+        'client_id'    => null, // PENANDA PROFIL
+    ]);
+    $client = $clientModel->find($clientId);
+} 
+
+
 
 log_message('debug', 'Final User Session: ' . json_encode($user)); 
 
 // Setelah semua aman → set session untuk login
 session()->set([
     'isLoggedIn' => true,
-    'user_id'    => $user['id'],
+    'userId'    => $user['id'],
+    'clientId'   => $client['id'],
     'email'      => $user['email'],
     'role'       => $user['role'],
-    'clientId'   => $client['id'],
+    'auth_type'  => $user['auth_type']
 ]);
 
 return redirect()->to(base_url('dashboard')); // Ganti sesuai route dashboard kamu
