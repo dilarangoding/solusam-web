@@ -10,6 +10,9 @@ class ResetController extends BaseController
 {
     public function index()
     {
+        if(session()->get('auth_type') != 'local'){
+        return redirect()->to(base_url('dashboard'));
+    }
         $data = [
             "title" => "Reset Password",
         ];
@@ -19,6 +22,9 @@ class ResetController extends BaseController
 
     public function update()
     {
+         if(session()->get('auth_type') != 'local'){
+        return redirect()->to(base_url('dashboard'));
+    }
         $users = new Users();
         $userId = session('userId');
 
