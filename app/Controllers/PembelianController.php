@@ -72,7 +72,12 @@ class PembelianController extends BaseController
         $nama_sampah = $this->request->getPost('nama_sampah');
         $jumlah_beli = $this->request->getPost('jumlah_beli');
         $id = $this->request->getPost('id');
-        $pembeli = $this->request->getPost('pembeli');   
+        $pembeli = $this->request->getPost('pembeli');
+        
+         // Tambahan penting: mencegah jumlah jadi 0 saat edit
+    if ($id && ($jumlah_beli === null || $jumlah_beli === "")) {
+        $jumlah_beli = $this->transaksiModel->find($id)['jumlah'];
+    }
         
         
         $data = [
