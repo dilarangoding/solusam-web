@@ -50,19 +50,6 @@ class PenjualanController extends BaseController
         return view('penjualan/create', $data);
     }
 
-    public function edit($id)
-    {
-        $data = [
-            "title" => "Edit Data Penjualan",
-            "sampah" => $this->sampahModel->where('client_id', session('clientId'))->findAll(),
-            "bayar" => $this->metodeBayarModel->where('client_id', session('clientId'))->findAll(),
-            "klien" => $this->klienModel->where('client_id', session('clientId'))->findAll(),
-            "data" => $this->transaksiModel->find($id),
-        ];
-
-        return view('penjualan/edit', $data);
-    }
-
     public function sampahAjax()
     {
         $id = $this->request->getPost('id');
@@ -247,17 +234,56 @@ class PenjualanController extends BaseController
     }
 
     public function delete()
-    {
-        $id = $this->request->getPost('id');
-        try {
-            $this->transaksiModel->delete($id);
-            $response = ["title" => "Berhasil", "text" => "Data berhasil dihapus", "icon" => "success"];
-        } catch (\Throwable $th) {
-            $response = ["title" => "Gagal", "text" => "Data gagal dihapus", "icon" => "error"];
-        }
-        return $this->response->setJSON($response);
+{
+    $id = $this->request->getPost('id');
+
+    // Ambil data transaksi sebelum dihapus
+    $transaksi = $this->transaksiModel->find($id);
+
+    if (!$transaksi) {
+        return $this->response->setJSON([
+            "title" => "Gagal",
+            "text" => "Transaksi tidak ditemukan",
+            "icon" => "error"
+        ]);
     }
 
+    // Ambil stok sampah sebelum transaksi dihapus
+    $stokSekarang = $this->sampahModel->getStokTersedia($transaksi['sampah_id']);
+
+    // Hitung stok baru → kembalikan jumlah yg dikurangi
+    $stokBaru = $stokSekarang + $transaksi['jumlah'];
+
+    try {
+        $this->transaksiModel->db->transStart();
+
+        // Update stok sampah
+        $this->sampahModel->update($transaksi['sampah_id'], [
+            'satuan' => $stokBaru
+        ]);
+
+        // Hapus transaksi
+        $this->transaksiModel->delete($id);
+
+        $this->transaksiModel->db->transComplete();
+
+        return $this->response->setJSON([
+            "title" => "Berhasil",
+            "text" => "Transaksi berhasil dihapus, stok dikembalikan",
+            "icon" => "success"
+        ]);
+
+    } catch (\Throwable $th) {
+
+        $this->transaksiModel->db->transRollback();
+
+        return $this->response->setJSON([
+            "title" => "Gagal",
+            "text" => "Gagal menghapus transaksi",
+            "icon" => "error"
+        ]);
+    }
+}
     /**
      * Generate QR Code untuk pembayaran QRIS
      * @param int $id ID transaksi
