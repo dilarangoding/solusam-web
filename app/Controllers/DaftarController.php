@@ -23,11 +23,11 @@ class DaftarController extends BaseController
 
         $rules = [
             'username' => [
-                'rules' => 'required|min_length[5]|max_length[10]|is_unique[users.username]',
+                'rules' => 'required|min_length[5]|max_length[15]|is_unique[users.username]',
                 'errors' => [
                     'required' => 'Username wajib diisi',
                     'min_length' => 'Username minimal 5 karakter',
-                    'max_length' => 'Username maksimal 50 karakter',
+                    'max_length' => 'Username maksimal 15 karakter',
                     'is_unique' => 'Username sudah digunakan'
                 ]
             ],
@@ -113,6 +113,7 @@ class DaftarController extends BaseController
             // Data untuk tabel client
             $clientData = [
                 'user_id' => $userModel->getInsertID(),
+                 'client_id'    => null,
                 'nama_lengkap' => $nama_lengkap,
                 'no_telp' => $no_telp,
                 'alamat' => $alamat,
