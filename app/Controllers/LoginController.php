@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\Client; // ✅ WAJIB
+use App\Models\Users;
 
 class LoginController extends BaseController
 {
@@ -64,21 +66,39 @@ class LoginController extends BaseController
             session()->setFlashdata('errors-login', ['Akun Anda tidak aktif']);
             return redirect()->back();
         }
+        
+        $clientModel = new Client();
+
+// cari profil utama
+$client = $clientModel
+    ->where('user_id', $user['id'])
+    ->where('client_id', null)
+    ->first();
+
+if (!$client) {
+    $clientId = $clientModel->insert([
+        'user_id'      => $user['id'],
+        'nama_lengkap' => $user['username'],
+        'client_id'    => null
+    ]);
+    $client = $clientModel->find($clientId);
+}
+
 
         $sessionData = [
             'kodeUser' => $user['kode_user'],
-            'userId' => $user['user_id'],
-            'clientId' => $user['id'],
+            'userId' => $user['id'],
+            'clientId'   => $client['id'],
             'username' => $user['username'],
             'role' => $user['role'],
-            'nama' => $user['nama_lengkap'],
+            'auth_type'  => 'local',
             'isLoggedIn' => true
         ];
 
         session()->set($sessionData);
 
         // Update last login
-        $this->m_users->update($user['user_id'], ['last_login' => date('Y-m-d H:i:s')]);
+        $this->m_users->update($user['id'], ['last_login' => date('Y-m-d H:i:s')]);
 
         return redirect()->to('dashboard');
     }
