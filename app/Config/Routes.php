@@ -48,7 +48,6 @@ $routes->group('penjualan', ['filter' => 'auth'], function ($routes) {
     $routes->get('create', 'PenjualanController::create');
     $routes->post('sampah-ajax', 'PenjualanController::sampahAjax');
     $routes->post('store', 'PenjualanController::store');
-    $routes->get('edit/(:num)', 'PenjualanController::edit/$1');
     $routes->post('delete', 'PenjualanController::delete');
     $routes->get('qrcode/(:num)', 'PenjualanController::showQrCode/$1');
     $routes->get('qrcode-image/(:num)', 'PenjualanController::generateQrCode/$1');
