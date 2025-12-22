@@ -7,10 +7,12 @@ use App\Controllers\BaseController;
 class SampahController extends BaseController
 {
     protected $sampahModel;
+    protected $transaksiModel;
 
     public function __construct()
     {
         $this->sampahModel = new \App\Models\Sampah();
+         $this->transaksiModel = new \App\Models\Transaksi();
     }
 
     public function index()
@@ -85,15 +87,52 @@ class SampahController extends BaseController
         }
     }
 
-    public function delete()
-    {
-        $id = $this->request->getPost('id');
-        try {
+  public function delete()
+{
+    $id = $this->request->getPost('id');
+    
+    try {
+        // Cek transaksi penjualan (jenis 'out')
+        $transaksiPenjualan = $this->transaksiModel
+            ->where('sampah_id', $id)
+            ->where('jenis', 'out')
+            ->countAllResults();
+        
+        // Jika ada transaksi penjualan, tidak boleh hapus
+        if ($transaksiPenjualan > 0) {
+            $response = [
+                "title" => "Tidak Dapat Dihapus", 
+                "text" => "Data sampah ini tidak dapat dihapus karena masih memiliki $transaksiPenjualan transaksi penjualan. Hapus transaksi terkait terlebih dahulu.", 
+                "icon" => "warning"
+            ];
+        } else {
+            // Jika tidak ada transaksi penjualan, lanjutkan proses hapus
+            
+            // TAMBAHAN: Hapus semua transaksi pembelian yang terkait
+            $this->transaksiModel
+                ->where('sampah_id', $id)
+                ->where('jenis', 'in')
+                ->delete();
+            
+            // Baru hapus data sampah
             $this->sampahModel->delete($id);
-            $response = ["title" => "Berhasil", "text" => "Data berhasil dihapus", "icon" => "success"];
-        } catch (\Throwable $th) {
-            $response = ["title" => "Gagal", "text" => "Data gagal dihapus", "icon" => "error"];
+            
+            $response = [
+                "title" => "Berhasil", 
+                "text" => "Data berhasil dihapus", 
+                "icon" => "success"
+            ];
         }
-        return $this->response->setJSON($response);
+        
+    } catch (\Exception $e) {
+        $response = [
+            "title" => "Gagal", 
+            "text" => "Data gagal dihapus: " . $e->getMessage(), 
+            "icon" => "error"
+        ];
     }
+    
+    return $this->response->setJSON($response);
+}
+
 }
