@@ -120,7 +120,7 @@
         <div class="mt-4 text-center">
             <p class="text-muted small mb-2">Sudah Punya Akun ?</p>
             <a href="<?= base_url('/') ?>" class="btn btn-outline-success btn-sm">
-                🛡️ Login
+                ЁЯЫбя╕П Login
             </a>
         </div>
     </div>
