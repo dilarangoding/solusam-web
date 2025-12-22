@@ -1,49 +1,48 @@
-<?= $this->extend('template/index'); ?> // Menggunakan template utama dari folder template/index
-<?= $this->section('content'); ?> // Membuka section khusus konten halaman
+<?= $this->extend('template/index'); ?>
+<?= $this->section('content'); ?>
 
 
 
-<div class="card border-success mb-4 mt-4"> // Card utama untuk tampilan form edit pembelian
-    <div class="card-header bg-success bg-opacity-10 text-success fw-bold"> // Header card dengan warna hijau tipis
-        + Form <?= $title; ?> // Menampilkan judul form dinamis dari variabel $title
+<div class="card border-success mb-4 mt-4">
+    <div class="card-header bg-success bg-opacity-10 text-success fw-bold">
+        + Form <?= $title; ?>
     </div>
-    <div class="card-body"> // Bagian isi card
-        <form action="<?= base_url('pembelian/store') ?>" method="POST"> // Form submit ke route pembelian/store
-            <div class="row g-3"> // Grid layout dengan jarak antar kolom
-                
+    <div class="card-body">
+        <form action="<?= base_url('pembelian/store') ?>" method="POST">
+            <div class="row g-3">
                 <input
-                    type="hidden" // Input tersembunyi untuk ID
+                    type="hidden"
                     name="id"
                     class="form-control"
                     required
-                    value="<?= $data['id'] ?>"> // Mengisi ID pembelian yang sedang diedit
+                    value="<?= $data['id'] ?>">
 
-                <div class="col-md-4"> // Kolom input tanggal
+                <div class="col-md-4">
                     <label class="form-label">Pilih Tanggal</label>
                     <input
-                        type="date" // Input tanggal
+                        type="date"
                         name="tanggal"
                         class="form-control"
-                        value="<?= $data['tanggal'] ?>" // Tanggal dari database
+                        value="<?= $data['tanggal'] ?>"
                         required>
                 </div>
 
-                <div class="col-md-4"> // Kolom dropdown Nama Sampah
+                <div class="col-md-4">
                     <label class="form-label">Nama Sampah</label>
-                    <select name="nama_sampah" class="form-select" id="nama_sampah" required> // Dropdown pilih sampah
+                    <select name="nama_sampah" class="form-select" id="nama_sampah" required>
                         <option value="" selected disabled>-- Pilih Sampah --</option>
-                        <?php foreach ($sampah as $row) : // Loop data sampah
-                            $selected  = $row['id'] == $data['sampah_id'] ? 'selected' : ''; // Menandai pilihan yang sesuai data edit
+                        <?php foreach ($sampah as $row) :
+                            $selected  = $row['id'] == $data['sampah_id'] ? 'selected' : '';
                         ?>
-                            <option value="<?= $row['id'] ?>" <?= $selected ?>> // Jika matching, beri selected
-                                <?= $row['nama_sampah'] ?> // Menampilkan nama sampah
+                            <option value="<?= $row['id'] ?>" <?= $selected ?>>
+                                <?= $row['nama_sampah'] ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
 
 
-                <div class="col-md-4"> // Kolom input harga
+                <div class="col-md-4">
                     <label class="form-label">Harga</label>
                     <input
                         type="number"
@@ -51,26 +50,26 @@
                         min="0"
                         placeholder="0"
                         class="form-control"
-                        id="harga" // ID digunakan untuk AJAX
-                        readonly // Tidak bisa diketik manual
+                        id="harga"
+                        readonly
                         required>
                 </div>
 
 
-                <div class="col-md-4"> // Kolom jumlah jual
+                <div class="col-md-4">
                     <label class="form-label">Jumlah</label>
                     <input
-                        type="number"
-                        min="1"
-                        name="jumlah_jual" // Nama field
-                        class="form-control"
-                        id="jumlah_jual"
-                        value="<?= $data['jumlah'] ?>" // Pre-fill jumlah
-                        onkeyup="jumlah()" // Hitung total saat diketik
-                        required>
+                    type="number"
+                    min="1"
+                    name="jumlah_beli"
+                    class="form-control"
+                    id="jumlah_beli"
+                    value="<?= $data['jumlah'] ?>"
+                    onkeyup="jumlah()"
+                    required>
                 </div>
 
-                <div class="col-md-4"> // Kolom total harga
+                <div class="col-md-4">
                     <label class="form-label">Total Harga</label>
                     <input
                         type="number"
@@ -82,15 +81,15 @@
                         required>
                 </div>
 
-                <div class="col-md-4"> // Kolom dropdown klien
+                <div class="col-md-4">
                     <label class="form-label">Klien</label>
-                    <select name="pembeli" class="form-select" id="pembeli" required> // Dropdown klien
+                    <select name="pembeli" class="form-select" id="pembeli" required>
                         <option value="" selected disabled>-- Pilih Pembeli --</option>
-                        <?php foreach ($klien as $row) : // Loop data klien
-                            $selected  = $row['id'] == $data['pembeli'] ? 'selected' : ''; // Menandai klien yang sesuai pada data edit
+                        <?php foreach ($klien as $row) :
+                            $selected  = $row['id'] == $data['pembeli'] ? 'selected' : '';
                         ?>
-                            <option value="<?= $row['id'] ?>" <?= $selected ?>> // Pilihan yang cocok otomatis terpilih
-                                <?= $row['nama_lengkap'] ?> // Menampilkan nama klien
+                            <option value="<?= $row['id'] ?>" <?= $selected ?>>
+                                <?= $row['nama_lengkap'] ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -99,12 +98,12 @@
             </div>
 
             <!-- Tombol Aksi -->
-            <div class="mt-4 d-flex gap-2"> // Layout tombol
+            <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-success">
-                    Update // Tombol update data
+                    Update
                 </button>
                 <a href="<?= base_url('penjualan') ?>" class="btn btn-secondary">
-                    Batal // Tombol kembali tanpa menyimpan
+                    Batal
                 </a>
             </div>
         </form>
@@ -112,43 +111,46 @@
 </div>
 
 
-<?= $this->endSection(); ?> // Menutup section konten
+<?= $this->endSection(); ?>
 
-<?= $this->section('js'); ?> // Bagian khusus js
+<?= $this->section('js'); ?>
 <script>
-    let idsampah = '<?= $data['sampah_id'] ?>'; // Menyimpan ID sampah awal yang sedang diedit
-    hargaSampah(idsampah); // Memanggil fungsi untuk load harga saat pertama kali
+    let idsampah = '<?= $data['sampah_id'] ?>';
+    hargaSampah(idsampah);
 
-    $('#nama_sampah').change(function() { // Ketika dropdown sampah berubah
-        let id = $(this).val(); // Ambil ID baru
-        hargaSampah(id); // Update harga
+
+    $('#nama_sampah').change(function() {
+        let id = $(this).val();
+
+        hargaSampah(id)
     });
 
-    function hargaSampah(id) { // Fungsi mengambil harga berdasarkan ID sampah
+    function hargaSampah(id) {
         $.ajax({
-            url: "<?= base_url('pembelian/sampah-ajax') ?>", // URL AJAX untuk ambil harga
+            url: "<?= base_url('pembelian/sampah-ajax') ?>",
             type: "POST",
             data: {
-                id // Data yang dikirim: id sampah
+                id
             },
-            success: function(response) { // Jika berhasil
-                $('#harga').val(response.harga_beli); // Isi input harga
-                jumlah(); // Re-kalkulasi total
+            success: function(response) {
+                $('#harga').val(response.harga_beli);
+                jumlah()
+
             },
-            error: function(xhr, status, error) { // Jika error
-                console.error(error); // Log error
-                alert('Terjadi kesalahan saat mengambil data harga.'); // Alert error
+            error: function(xhr, status, error) {
+                console.error(error);
+                alert('Terjadi kesalahan saat mengambil data harga.');
             }
         });
     }
 
-    function jumlah() { // Fungsi hitung total harga
-        let harga = parseFloat($('#harga').val()) || 0; // Ambil harga, default 0 jika kosong
-        let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0; // Ambil jumlah, default 0
+    function jumlah() {
+        let harga = parseFloat($('#harga').val()) || 0;
+        let jumlahJual = parseFloat($('#jumlah_beli').val()) || 0;
 
-        let totalHarga = harga * jumlahJual; // Rumus total harga
+        let totalHarga = harga * jumlahJual;
 
-        $('#total_harga').val(totalHarga); // Set hasil total harga
+        $('#total_harga').val(totalHarga);
     }
 </script>
-<?= $this->endSection(); ?> // Menutup section js
+<?= $this->endSection(); ?>
