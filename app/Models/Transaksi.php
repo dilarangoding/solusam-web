@@ -135,7 +135,7 @@ class Transaksi extends Model
 
     $query = $builder->get()->getResultArray(); // Eksekusi query dan ambil hasil sebagai array
     return $query; // Kembalikan hasil
-
+}
     public function getLastTransaction($client_id, $bulan)
     {
     $builder = $this->db->table('transaksi t'); // Query builder tabel transaksi
@@ -148,6 +148,7 @@ class Transaksi extends Model
     $query = $builder->get()->getResultArray(); // Eksekusi query
     return $query; // Kembalikan hasil
     }
+
 
     public function getRingkasanBulan($client_id, $bulan, $tahun)
     {
