@@ -8,15 +8,19 @@ use CodeIgniter\HTTP\ResponseInterface;
 class DataKlienController extends BaseController
 {
     protected $klienModel;
+    protected $transaksiModel;
+    
     public function __construct()
     {
         $this->klienModel = new \App\Models\Client();
+        $this->transaksiModel = new \App\Models\Transaksi();
     }
     public function index()
     {
         $data = [
             "title" => "Data Klien",
-            "data" => $this->klienModel->where('client_id', session()->get('clientId'))->findAll()
+            "data" => $this->klienModel ->where('client_id', session('clientId'))
+            ->findAll()
         ];
 
         return view('klien/index', $data);
@@ -33,11 +37,14 @@ class DataKlienController extends BaseController
 
     public function edit($id)
     {
-        $data = [
-            "title" => "Edit Data Klien",
-            "data" => $this->klienModel->where('id', $id)->first()
-        ];
-
+       $data = [
+    "title" => "Edit Data Klien",
+    "data" => $this->klienModel
+        ->where('id', $id)
+        ->where('user_id', session('userId'))
+        ->where('client_id', session('clientId'))
+        ->first()
+];
         return view('klien/edit', $data);
     }
 
@@ -50,6 +57,8 @@ class DataKlienController extends BaseController
         $id = $this->request->getPost('id');
 
         $data = [
+            'user_id'  => session('userId'),
+            'client_id' => session('clientId'),
             'nama_lengkap' => $nama_lengkap,
             'no_telp' => $no_telp,
             'alamat' => $alamat,
@@ -61,7 +70,6 @@ class DataKlienController extends BaseController
             $text = 'diupdate';
         } else {
             $text = 'ditambahkan';
-            $data['client_id'] = session('clientId');
         }
 
         try {
@@ -84,15 +92,61 @@ class DataKlienController extends BaseController
         }
     }
 
-    public function delete()
-    {
-        $id = $this->request->getPost('id');
-        try {
+   public function delete()
+{
+    $id = $this->request->getPost('id');
+    
+    try {
+        // ← TAMBAH VALIDASI INI (BARIS 1-27)
+        // Cek apakah klien ini memiliki transaksi pembelian (jenis 'in')
+        $transaksiPembelian = $this->transaksiModel
+            ->where('pembeli', $id)
+            ->where('jenis', 'in')
+            ->countAllResults();
+        
+        // Cek apakah klien ini memiliki transaksi penjualan (jenis 'out')
+        $transaksiPenjualan = $this->transaksiModel
+            ->where('pembeli', $id)
+            ->where('jenis', 'out')
+            ->countAllResults();
+        
+        $totalTransaksi = $transaksiPembelian + $transaksiPenjualan;
+        
+        // Jika ada transaksi, tidak boleh hapus
+        if ($totalTransaksi > 0) {
+            $jenisTransaksi = [];
+            if ($transaksiPembelian > 0) {
+                $jenisTransaksi[] = "pembelian ($transaksiPembelian transaksi)";
+            }
+            if ($transaksiPenjualan > 0) {
+                $jenisTransaksi[] = "penjualan ($transaksiPenjualan transaksi)";
+            }
+            
+            $response = [
+                "title" => "Tidak Dapat Dihapus", 
+                "text" => "Klien ini tidak dapat dihapus karena masih memiliki " . implode(" dan ", $jenisTransaksi) . ". Hapus transaksi terkait terlebih dahulu.", 
+                "icon" => "warning"
+            ];
+        } else {
+            // Jika tidak ada transaksi, baru boleh hapus
             $this->klienModel->delete($id);
-            $response = ["title" => "Berhasil", "text" => "Data berhasil dihapus", "icon" => "success"];
-        } catch (\Throwable $th) {
-            $response = ["title" => "Gagal", "text" => "Data gagal dihapus", "icon" => "error"];
+            $response = [
+                "title" => "Berhasil", 
+                "text" => "Data berhasil dihapus", 
+                "icon" => "success"
+            ];
         }
-        return $this->response->setJSON($response);
+        // ← AKHIR VALIDASI
+        
+    } catch (\Throwable $th) {
+        $response = [
+            "title" => "Gagal", 
+            "text" => "Data gagal dihapus: " . $th->getMessage(), 
+            "icon" => "error"
+        ];
     }
+    
+    return $this->response->setJSON($response);
+}
+
 }
