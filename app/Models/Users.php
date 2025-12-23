@@ -8,7 +8,7 @@ class Users extends Model
 {
     protected $table            = 'users';
     protected $primaryKey       = 'id';
-    protected $allowedFields = ['kode_user', 'username', 'email', 'password', 'google_id', 'role', 'status', 'last_login','auth_type'];
+    protected $allowedFields = ['kode_user', 'username', 'email', 'password', 'nama_lengkap', 'no_telp', 'alamat', 'google_id', 'role', 'status', 'last_login','auth_type'];
 
     // Dates
     protected $useTimestamps = true;
