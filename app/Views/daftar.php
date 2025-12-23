@@ -74,13 +74,6 @@
                     value="<?= old('alamat') ?>">
             </div>
 
-            <!-- Jenis Usaha -->
-            <div class="mb-3">
-                <label class="form-label">Jenis Usaha</label>
-                <input type="text" class="form-control" name="jenis_usaha" placeholder="Masukkan jenis usaha"
-                    value="<?= old('jenis_usaha') ?>">
-            </div>
-
             <!-- Password -->
             <div class="mb-3">
                 <label class="form-label">Password</label>
