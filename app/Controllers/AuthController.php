@@ -146,32 +146,13 @@ class AuthController extends BaseController
 
 }
 
-$clientModel = new \App\Models\Client();
-
-// cari PROFIL USER saja
-$client = $clientModel
-    ->where('user_id', $user['id'])
-    ->where('client_id', null)
-    ->first();
-
-if (!$client) {
-    $clientId = $clientModel->insert([
-        'user_id'      => $user['id'],
-        'nama_lengkap' => $userInfo->name ?? $user['username'],
-        'client_id'    => null, // PENANDA PROFIL
-    ]);
-    $client = $clientModel->find($clientId);
-} 
-
-
-
 log_message('debug', 'Final User Session: ' . json_encode($user)); 
 
 // Setelah semua aman → set session untuk login
 session()->set([
     'isLoggedIn' => true,
     'userId'    => $user['id'],
-    'clientId'   => $client['id'],
+    'clientId'   => $user['id'],
     'email'      => $user['email'],
     'role'       => $user['role'],
     'auth_type'  => $user['auth_type']
