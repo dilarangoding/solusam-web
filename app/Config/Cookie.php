@@ -1,10 +1,15 @@
 <?php
 
+
+// Namespace Config digunakan untuk menyimpan seluruh file konfigurasi aplikasi CodeIgniter
 namespace Config;
 
+// Mengimpor BaseConfig sebagai kelas dasar konfigurasi
 use CodeIgniter\Config\BaseConfig;
+// Digunakan untuk tipe data tanggal/waktu pada properti expires
 use DateTimeInterface;
 
+// Class Cookie berfungsi sebagai konfigurasi global cookie di aplikasi
 class Cookie extends BaseConfig
 {
     /**
@@ -12,7 +17,9 @@ class Cookie extends BaseConfig
      * Cookie Prefix
      * --------------------------------------------------------------------------
      *
-     * Set a cookie name prefix if you need to avoid collisions.
+     * Prefix akan ditambahkan di depan nama setiap cookie.
+     * Berguna untuk menghindari bentrok cookie jika ada beberapa aplikasi
+     * dalam satu domain.
      */
     public string $prefix = '';
 
@@ -20,10 +27,9 @@ class Cookie extends BaseConfig
      * --------------------------------------------------------------------------
      * Cookie Expires Timestamp
      * --------------------------------------------------------------------------
-     *
-     * Default expires timestamp for cookies. Setting this to `0` will mean the
-     * cookie will not have the `Expires` attribute and will behave as a session
-     * cookie.
+    * Menentukan waktu kedaluwarsa cookie.
+     * - 0  : cookie bersifat session (hilang saat browser ditutup)
+     * - int/string/DateTimeInterface : waktu tertentu
      *
      * @var DateTimeInterface|int|string
      */
@@ -33,8 +39,9 @@ class Cookie extends BaseConfig
      * --------------------------------------------------------------------------
      * Cookie Path
      * --------------------------------------------------------------------------
-     *
-     * Typically will be a forward slash.
+    *
+     * Menentukan path URL di mana cookie berlaku.
+     * '/' berarti cookie berlaku untuk seluruh website.
      */
     public string $path = '/';
 
@@ -43,7 +50,8 @@ class Cookie extends BaseConfig
      * Cookie Domain
      * --------------------------------------------------------------------------
      *
-     * Set to `.your-domain.com` for site-wide cookies.
+     * Menentukan domain cookie.
+     * Contoh: '.example.com' agar berlaku di seluruh subdomain.
      */
     public string $domain = '';
 
@@ -52,7 +60,8 @@ class Cookie extends BaseConfig
      * Cookie Secure
      * --------------------------------------------------------------------------
      *
-     * Cookie will only be set if a secure HTTPS connection exists.
+     * Jika true, cookie hanya akan dikirim melalui koneksi HTTPS.
+     * Sangat disarankan untuk aplikasi production.
      */
     public bool $secure = false;
 
@@ -61,7 +70,8 @@ class Cookie extends BaseConfig
      * Cookie HTTPOnly
      * --------------------------------------------------------------------------
      *
-     * Cookie will only be accessible via HTTP(S) (no JavaScript).
+     * Jika true, cookie tidak bisa diakses oleh JavaScript.
+     * Ini melindungi dari serangan XSS (Cross-Site Scripting).
      */
     public bool $httponly = true;
 
@@ -70,20 +80,13 @@ class Cookie extends BaseConfig
      * Cookie SameSite
      * --------------------------------------------------------------------------
      *
-     * Configure cookie SameSite setting. Allowed values are:
-     * - None
-     * - Lax
-     * - Strict
-     * - ''
+     * Mengatur kebijakan pengiriman cookie lintas situs (cross-site).
      *
-     * Alternatively, you can use the constant names:
-     * - `Cookie::SAMESITE_NONE`
-     * - `Cookie::SAMESITE_LAX`
-     * - `Cookie::SAMESITE_STRICT`
-     *
-     * Defaults to `Lax` for compatibility with modern browsers. Setting `''`
-     * (empty string) means default SameSite attribute set by browsers (`Lax`)
-     * will be set on cookies. If set to `None`, `$secure` must also be set.
+     * Nilai yang diperbolehkan:
+     * - None   : dikirim di semua request (harus HTTPS)
+     * - Lax    : dikirim pada navigasi normal (default)
+     * - Strict : hanya dikirim dari situs yang sama
+     * - ''     : mengikuti default browser
      *
      * @var ''|'Lax'|'None'|'Strict'
      */
@@ -94,14 +97,8 @@ class Cookie extends BaseConfig
      * Cookie Raw
      * --------------------------------------------------------------------------
      *
-     * This flag allows setting a "raw" cookie, i.e., its name and value are
-     * not URL encoded using `rawurlencode()`.
-     *
-     * If this is set to `true`, cookie names should be compliant of RFC 2616's
-     * list of allowed characters.
-     *
-     * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#attributes
-     * @see https://tools.ietf.org/html/rfc2616#section-2.2
+     * Jika true, nama dan nilai cookie tidak akan di-URL encode.
+     * Harus dipastikan karakter cookie sesuai standar RFC 2616.
      */
     public bool $raw = false;
 }
