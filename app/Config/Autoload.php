@@ -1,22 +1,29 @@
 <?php
 
+// Namespace Config digunakan untuk semua file konfigurasi CodeIgniter
 namespace Config;
 
+// Menggunakan AutoloadConfig bawaan CodeIgniter
+// Class ini khusus untuk pengaturan autoload (pemanggilan otomatis file)
 use CodeIgniter\Config\AutoloadConfig;
 
 /**
  * -------------------------------------------------------------------
  * AUTOLOADER CONFIGURATION
  * -------------------------------------------------------------------
+  *
+ * File ini mengatur bagaimana CodeIgniter memuat (autoload)
+ * class, namespace, file, dan helper secara otomatis.
  *
- * This file defines the namespaces and class maps so the Autoloader
- * can find the files as needed.
+ * Autoloader akan mencari file sesuai konfigurasi di sini
+ * tanpa perlu require/include manual.
  *
- * NOTE: If you use an identical key in $psr4 or $classmap, then
- *       the values in this file will overwrite the framework's values.
+ * CATATAN:
+ * - Jika key yang sama digunakan di $psr4 atau $classmap,
+ *   maka konfigurasi di file ini akan menimpa konfigurasi framework.
  *
- * NOTE: This class is required prior to Autoloader instantiation,
- *       and does not extend BaseConfig.
+ * - File ini dipanggil SEBELUM Autoloader diinisialisasi,
+ *   sehingga class ini TIDAK mewarisi BaseConfig.
  */
 class Autoload extends AutoloadConfig
 {
@@ -24,16 +31,19 @@ class Autoload extends AutoloadConfig
      * -------------------------------------------------------------------
      * Namespaces
      * -------------------------------------------------------------------
-     * This maps the locations of any namespaces in your application to
-     * their location on the file system. These are used by the autoloader
-     * to locate files the first time they have been instantiated.
+         *
+     * Digunakan untuk memetakan namespace ke folder fisik.
+     * Autoloader akan mencari file berdasarkan namespace ini.
      *
-     * The 'Config' (APPPATH . 'Config') and 'CodeIgniter' (SYSTEMPATH) are
-     * already mapped for you.
+     * Contoh:
+     * App\Controllers\Home  -> app/Controllers/Home.php
      *
-     * You may change the name of the 'App' namespace if you wish,
-     * but this should be done prior to creating any namespaced classes,
-     * else you will need to modify all of those classes for this to work.
+     * Namespace default yang sudah ada:
+     * - Config     -> app/Config
+     * - CodeIgniter-> system
+     *
+     * APP_NAMESPACE biasanya bernilai "App"
+     * APPPATH menunjuk ke folder /app
      *
      * @var array<string, list<string>|string>
      */
@@ -45,16 +55,16 @@ class Autoload extends AutoloadConfig
      * -------------------------------------------------------------------
      * Class Map
      * -------------------------------------------------------------------
-     * The class map provides a map of class names and their exact
-     * location on the drive. Classes loaded in this manner will have
-     * slightly faster performance because they will not have to be
-     * searched for within one or more directories as they would if they
-     * were being autoloaded through a namespace.
+      *
+     * Digunakan untuk memetakan nama class langsung ke file tertentu.
+     * Lebih cepat daripada PSR-4 karena tidak perlu scanning folder.
      *
-     * Prototype:
-     *   $classmap = [
-     *       'MyClass'   => '/path/to/class/file.php'
-     *   ];
+     * Cocok untuk:
+     * - Library khusus
+     * - File lama (legacy)
+     *
+     * Contoh:
+     * 'MyClass' => '/path/to/MyClass.php'
      *
      * @var array<string, string>
      */
@@ -64,14 +74,15 @@ class Autoload extends AutoloadConfig
      * -------------------------------------------------------------------
      * Files
      * -------------------------------------------------------------------
-     * The files array provides a list of paths to __non-class__ files
-     * that will be autoloaded. This can be useful for bootstrap operations
-     * or for loading functions.
      *
-     * Prototype:
-     *   $files = [
-     *       '/path/to/my/file.php',
-     *   ];
+     * Digunakan untuk memuat file NON-class secara otomatis.
+     * Biasanya berisi file helper custom atau fungsi global.
+     *
+     * File di sini akan diload setiap request.
+     *
+     * Contoh penggunaan:
+     * - File fungsi global
+     * - File bootstrap tambahan
      *
      * @var list<string>
      */
@@ -81,10 +92,13 @@ class Autoload extends AutoloadConfig
      * -------------------------------------------------------------------
      * Helpers
      * -------------------------------------------------------------------
-     * Prototype:
-     *   $helpers = [
-     *       'form',
-     *   ];
+     * Helper yang akan dimuat otomatis tanpa perlu memanggil helper()
+     *
+     * Pada konfigurasi ini:
+     * - 'form'    -> helper untuk form (form_open, form_input, dll)
+     * - 'session' -> helper untuk manajemen session
+     *
+     * Helper ini langsung tersedia di semua controller dan view.
      *
      * @var list<string>
      */
