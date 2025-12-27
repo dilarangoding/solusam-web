@@ -4,22 +4,29 @@
  |--------------------------------------------------------------------------
  | ERROR DISPLAY
  |--------------------------------------------------------------------------
- | In development, we want to show as many errors as possible to help
- | make sure they don't make it to production. And save us hours of
- | painful debugging.
+ | Pengaturan ini mengatur bagaimana error PHP ditampilkan
+ | pada environment development.
+ | Di mode development, semua error ditampilkan agar
+ | memudahkan proses debugging dan pengembangan aplikasi.
  |
  | If you set 'display_errors' to '1', CI4's detailed error report will show.
  */
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+error_reporting(E_ALL);  // → Menampilkan SEMUA jenis error PHP
+ini_set('display_errors', '1'); // → Mengizinkan error ditampilkan di browser
 
 /*
  |--------------------------------------------------------------------------
  | DEBUG BACKTRACES
  |--------------------------------------------------------------------------
- | If true, this constant will tell the error screens to display debug
- | backtraces along with the other error information. If you would
- | prefer to not see this, set this value to false.
+ | Konstanta ini mengatur apakah stack trace (alur pemanggilan fungsi)
+ | ditampilkan pada halaman error CodeIgniter.
+ |
+ | Jika bernilai true:
+ | - Error page akan menampilkan detail file, baris kode,
+ |   dan alur eksekusi program
+ |
+ | defined(...) digunakan agar konstanta tidak didefinisikan ulang
+ | jika sudah ada sebelumnya.
  */
 defined('SHOW_DEBUG_BACKTRACE') || define('SHOW_DEBUG_BACKTRACE', true);
 
@@ -27,8 +34,14 @@ defined('SHOW_DEBUG_BACKTRACE') || define('SHOW_DEBUG_BACKTRACE', true);
  |--------------------------------------------------------------------------
  | DEBUG MODE
  |--------------------------------------------------------------------------
- | Debug mode is an experimental flag that can allow changes throughout
- | the system. This will control whether Kint is loaded, and a few other
- | items. It can always be used within your own application too.
+  | CI_DEBUG adalah flag utama mode debug CodeIgniter 4.
+ |
+ | Jika true:
+ | - Kint (debugging tool CodeIgniter) akan aktif
+ | - Error akan ditampilkan secara detail
+ | - Fitur debugging internal CodeIgniter diaktifkan
+ |
+ | Mode ini hanya untuk DEVELOPMENT,
+ | dan HARUS dimatikan saat production.
  */
 defined('CI_DEBUG') || define('CI_DEBUG', true);
