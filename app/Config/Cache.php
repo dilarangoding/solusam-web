@@ -1,25 +1,40 @@
 <?php
 
+// Interface dasar untuk semua cache handler
 namespace Config;
 
+// Interface dasar untuk semua cache handler
 use CodeIgniter\Cache\CacheInterface;
+// Handler cache "dummy" (tidak benar-benar menyimpan cache)
 use CodeIgniter\Cache\Handlers\DummyHandler;
+// Handler cache berbasis file (disimpan di folder writable/cache)
 use CodeIgniter\Cache\Handlers\FileHandler;
+// Handler cache menggunakan layanan Memcached
 use CodeIgniter\Cache\Handlers\MemcachedHandler;
+// Handler cache Redis menggunakan library Predis (PHP murni)
 use CodeIgniter\Cache\Handlers\PredisHandler;
+// Handler cache Redis menggunakan ekstensi PHP Redis
 use CodeIgniter\Cache\Handlers\RedisHandler;
+// Handler cache untuk Windows (WinCache)
 use CodeIgniter\Cache\Handlers\WincacheHandler;
+// BaseConfig sebagai kelas dasar konfigurasi
 use CodeIgniter\Config\BaseConfig;
 
+// Class Cache digunakan untuk mengatur sistem caching global aplikasi
 class Cache extends BaseConfig
 {
     /**
      * --------------------------------------------------------------------------
      * Primary Handler
      * --------------------------------------------------------------------------
+      *
+     * Menentukan handler cache utama yang digunakan aplikasi.
+     * Jika handler ini tidak tersedia, maka $backupHandler akan digunakan.
      *
-     * The name of the preferred handler that should be used. If for some reason
-     * it is not available, the $backupHandler will be used in its place.
+     * Contoh:
+     * 'file'      -> cache disimpan dalam file
+     * 'redis'     -> cache disimpan di Redis
+     * 'memcached' -> cache disimpan di Memcached
      */
     public string $handler = 'file';
 
@@ -28,9 +43,10 @@ class Cache extends BaseConfig
      * Backup Handler
      * --------------------------------------------------------------------------
      *
-     * The name of the handler that will be used in case the first one is
-     * unreachable. Often, 'file' is used here since the filesystem is
-     * always available, though that's not always practical for the app.
+     * Handler cadangan jika handler utama gagal atau tidak tersedia.
+     *
+     * 'dummy' berarti cache akan dinonaktifkan tanpa error.
+     * Biasanya digunakan agar aplikasi tetap berjalan.
      */
     public string $backupHandler = 'dummy';
 
@@ -39,8 +55,9 @@ class Cache extends BaseConfig
      * Key Prefix
      * --------------------------------------------------------------------------
      *
-     * This string is added to all cache item names to help avoid collisions
-     * if you run multiple applications with the same cache engine.
+     * Prefix yang akan ditambahkan pada setiap key cache.
+     * Berguna untuk menghindari konflik cache jika:
+     * - Satu server digunakan oleh banyak aplikasi
      */
     public string $prefix = '';
 
@@ -49,11 +66,10 @@ class Cache extends BaseConfig
      * Default TTL
      * --------------------------------------------------------------------------
      *
-     * The default number of seconds to save items when none is specified.
+     * Lama waktu (dalam detik) data cache disimpan secara default.
      *
-     * WARNING: This is not used by framework handlers where 60 seconds is
-     * hard-coded, but may be useful to projects and modules. This will replace
-     * the hard-coded value in a future release.
+     * Contoh:
+     * 60 = cache berlaku selama 1 menit
      */
     public int $ttl = 60;
 
@@ -62,11 +78,10 @@ class Cache extends BaseConfig
      * Reserved Characters
      * --------------------------------------------------------------------------
      *
-     * A string of reserved characters that will not be allowed in keys or tags.
-     * Strings that violate this restriction will cause handlers to throw.
-     * Default: {}()/\@:
+     * Karakter yang tidak boleh digunakan pada key cache.
+     * Jika digunakan, cache handler akan melempar error.
      *
-     * NOTE: The default set is required for PSR-6 compliance.
+     * Ini diperlukan untuk standar PSR-6.
      */
     public string $reservedCharacters = '{}()/\@:';
 
@@ -75,9 +90,10 @@ class Cache extends BaseConfig
      * File settings
      * --------------------------------------------------------------------------
      *
-     * Your file storage preferences can be specified below, if you are using
-     * the File driver.
+     * Pengaturan khusus jika menggunakan FileHandler.
      *
+     * storePath → lokasi folder penyimpanan cache
+     * mode      → permission file cache
      * @var array{storePath?: string, mode?: int}
      */
     public array $file = [
@@ -90,11 +106,12 @@ class Cache extends BaseConfig
      * Memcached settings
      * -------------------------------------------------------------------------
      *
-     * Your Memcached servers can be specified below, if you are using
-     * the Memcached drivers.
+     * Konfigurasi server Memcached jika digunakan.
      *
-     * @see https://codeigniter.com/user_guide/libraries/caching.html#memcached
-     *
+     * host   → alamat server
+     * port   → port Memcached
+     * weight → prioritas server
+     * raw    → format penyimpanan data
      * @var array{host?: string, port?: int, weight?: int, raw?: bool}
      */
     public array $memcached = [
@@ -108,11 +125,14 @@ class Cache extends BaseConfig
      * -------------------------------------------------------------------------
      * Redis settings
      * -------------------------------------------------------------------------
+      *
+     * Konfigurasi Redis jika menggunakan RedisHandler atau PredisHandler.
      *
-     * Your Redis server can be specified below, if you are using
-     * the Redis or Predis drivers.
-     *
-     * @var array{host?: string, password?: string|null, port?: int, timeout?: int, database?: int}
+     * host     → alamat server Redis
+     * password → password Redis (jika ada)
+     * port     → port Redis
+     * timeout  → batas waktu koneksi
+     * database → index database Redis
      */
     public array $redis = [
         'host'     => '127.0.0.1',
@@ -127,9 +147,9 @@ class Cache extends BaseConfig
      * Available Cache Handlers
      * --------------------------------------------------------------------------
      *
-     * This is an array of cache engine alias' and class names. Only engines
-     * that are listed here are allowed to be used.
+     * Daftar handler cache yang diperbolehkan digunakan aplikasi.
      *
+     * Jika handler tidak ada di sini, maka tidak bisa dipakai.
      * @var array<string, class-string<CacheInterface>>
      */
     public array $validHandlers = [
@@ -146,16 +166,12 @@ class Cache extends BaseConfig
      * Web Page Caching: Cache Include Query String
      * --------------------------------------------------------------------------
      *
-     * Whether to take the URL query string into consideration when generating
-     * output cache files. Valid options are:
+     * Mengatur apakah query string URL ikut dipertimbangkan
+     * saat membuat cache halaman.
      *
-     *    false = Disabled
-     *    true  = Enabled, take all query parameters into account.
-     *            Please be aware that this may result in numerous cache
-     *            files generated for the same page over and over again.
-     *    ['q'] = Enabled, but only take into account the specified list
-     *            of query parameters.
-     *
+     * false → query string diabaikan
+     * true  → semua query string diperhitungkan
+     * ['q'] → hanya parameter tertentu yang diperhitungkan
      * @var bool|list<string>
      */
     public $cacheQueryString = false;
