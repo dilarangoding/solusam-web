@@ -4,14 +4,16 @@ namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
 
+
 /**
- * Stores the default settings for the ContentSecurityPolicy, if you
- * choose to use it. The values here will be read in and set as defaults
- * for the site. If needed, they can be overridden on a page-by-page basis.
+ * Class ContentSecurityPolicy
  *
- * Suggested reference for explanations:
+ * File konfigurasi ini digunakan untuk mengatur
+ * Content Security Policy (CSP) pada aplikasi CodeIgniter.
  *
- * @see https://www.html5rocks.com/en/tutorials/security/content-security-policy/
+ * CSP berfungsi untuk meningkatkan keamanan aplikasi web
+ * dengan membatasi sumber (source) mana saja yang diizinkan
+ * untuk memuat script, style, gambar, font, iframe, dan resource lainnya.
  */
 class ContentSecurityPolicy extends BaseConfig
 {
@@ -19,158 +21,177 @@ class ContentSecurityPolicy extends BaseConfig
     // Broadbrush CSP management
     // -------------------------------------------------------------------------
 
-    /**
-     * Default CSP report context
+     /**
+     * Menentukan apakah CSP dijalankan dalam mode report-only.
+     *
+     * false = CSP benar-benar diterapkan (resource diblokir)
+     * true  = CSP hanya melaporkan pelanggaran tanpa memblokir
      */
     public bool $reportOnly = false;
 
     /**
-     * Specifies a URL where a browser will send reports
-     * when a content security policy is violated.
+      * URL tujuan laporan jika terjadi pelanggaran CSP.
+     *
+     * Browser akan mengirim laporan ke URL ini
+     * jika ada resource yang melanggar kebijakan CSP.
+     *
+     * null berarti tidak mengirim laporan ke mana pun.
      */
     public ?string $reportURI = null;
 
     /**
-     * Instructs user agents to rewrite URL schemes, changing
-     * HTTP to HTTPS. This directive is for websites with
-     * large numbers of old URLs that need to be rewritten.
+    * Jika true, browser akan otomatis mengubah request
+     * dari HTTP menjadi HTTPS.
+     *
+     * Berguna jika aplikasi memiliki banyak URL lama
+     * yang masih menggunakan HTTP.
      */
     public bool $upgradeInsecureRequests = false;
 
     // -------------------------------------------------------------------------
-    // Sources allowed
-    // NOTE: once you set a policy to 'none', it cannot be further restricted
+    // Sumber (Source) yang diizinkan
+    // CATATAN: jika diset 'none', tidak bisa dibatasi lagi
     // -------------------------------------------------------------------------
 
     /**
-     * Will default to self if not overridden
+     * Sumber default untuk semua resource.
+     *
+     * Jika tidak diset, akan otomatis menggunakan 'self'
+     * (resource hanya boleh berasal dari domain sendiri).
      *
      * @var list<string>|string|null
      */
     public $defaultSrc;
 
     /**
-     * Lists allowed scripts' URLs.
+    * Menentukan sumber yang diizinkan untuk JavaScript.
+     *
+     * 'self' artinya hanya script dari domain sendiri
+     * yang diperbolehkan.
      *
      * @var list<string>|string
      */
     public $scriptSrc = 'self';
 
     /**
-     * Lists allowed stylesheets' URLs.
-     *
+      * Menentukan sumber yang diizinkan untuk file CSS.
      * @var list<string>|string
      */
     public $styleSrc = 'self';
 
     /**
-     * Defines the origins from which images can be loaded.
-     *
+      * Menentukan sumber yang diizinkan untuk gambar.
      * @var list<string>|string
      */
     public $imageSrc = 'self';
 
     /**
-     * Restricts the URLs that can appear in a page's `<base>` element.
-     *
-     * Will default to self if not overridden
+    * Membatasi URL yang boleh digunakan
+     * pada tag <base>.
      *
      * @var list<string>|string|null
      */
     public $baseURI;
 
     /**
-     * Lists the URLs for workers and embedded frame contents
+    * Menentukan sumber untuk worker dan iframe anak.
      *
      * @var list<string>|string
      */
     public $childSrc = 'self';
 
     /**
-     * Limits the origins that you can connect to (via XHR,
-     * WebSockets, and EventSource).
+     * Menentukan sumber yang boleh dihubungi
+     * melalui AJAX, WebSocket, EventSource, dll.
      *
      * @var list<string>|string
      */
     public $connectSrc = 'self';
 
     /**
-     * Specifies the origins that can serve web fonts.
+      * Menentukan sumber font (web font).
      *
      * @var list<string>|string
      */
     public $fontSrc;
 
     /**
-     * Lists valid endpoints for submission from `<form>` tags.
+     * Menentukan URL tujuan submit form.
      *
      * @var list<string>|string
      */
     public $formAction = 'self';
 
     /**
-     * Specifies the sources that can embed the current page.
-     * This directive applies to `<frame>`, `<iframe>`, `<embed>`,
-     * and `<applet>` tags. This directive can't be used in
-     * `<meta>` tags and applies only to non-HTML resources.
+    * Menentukan domain mana saja
+     * yang diizinkan untuk menampilkan halaman ini
+     * dalam iframe.
      *
      * @var list<string>|string|null
      */
     public $frameAncestors;
 
     /**
-     * The frame-src directive restricts the URLs which may
-     * be loaded into nested browsing contexts.
+      * Menentukan sumber yang diizinkan
+     * untuk konten iframe.
      *
      * @var list<string>|string|null
      */
     public $frameSrc;
 
     /**
-     * Restricts the origins allowed to deliver video and audio.
+  * Menentukan sumber audio dan video.
      *
      * @var list<string>|string|null
      */
     public $mediaSrc;
 
     /**
-     * Allows control over Flash and other plugins.
+     * Menentukan sumber object seperti Flash.
      *
      * @var list<string>|string
      */
     public $objectSrc = 'self';
 
     /**
+     * Menentukan sumber manifest web app.
+     *
      * @var list<string>|string|null
      */
     public $manifestSrc;
 
     /**
-     * Limits the kinds of plugins a page may invoke.
+     * Menentukan tipe plugin yang diizinkan.
      *
      * @var list<string>|string|null
      */
     public $pluginTypes;
 
     /**
-     * List of actions allowed.
+      * Mengatur sandboxing untuk halaman.
      *
      * @var list<string>|string|null
      */
     public $sandbox;
 
     /**
-     * Nonce tag for style
+       * Placeholder nonce untuk tag style.
+     *
+     * Digunakan untuk mengizinkan inline CSS
+     * yang memiliki nonce yang valid.
      */
     public string $styleNonceTag = '{csp-style-nonce}';
-
     /**
-     * Nonce tag for script
+     * Placeholder nonce untuk tag script.
+     *
+     * Digunakan untuk mengizinkan inline JavaScript
+     * yang memiliki nonce yang valid.
      */
     public string $scriptNonceTag = '{csp-script-nonce}';
 
     /**
-     * Replace nonce tag automatically
+      * Jika true, CodeIgniter akan otomatis
+     * mengganti nonce tag dengan nilai nonce yang valid.
      */
     public bool $autoNonce = true;
 }
