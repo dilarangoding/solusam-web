@@ -4,14 +4,13 @@
  | --------------------------------------------------------------------
  | App Namespace
  | --------------------------------------------------------------------
+  |
+ | Konstanta APP_NAMESPACE digunakan sebagai namespace utama aplikasi.
+ | Semua class di folder app/ secara default akan berada di bawah
+ | namespace ini (misalnya: App\Controllers, App\Models, dll).
  |
- | This defines the default Namespace that is used throughout
- | CodeIgniter to refer to the Application directory. Change
- | this constant to change the namespace that all application
- | classes should use.
- |
- | NOTE: changing this will require manually modifying the
- | existing namespaces of App\* namespaced-classes.
+ | Jika konstanta ini diubah, maka SEMUA namespace class App\*
+ | harus ikut diubah secara manual.
  */
 defined('APP_NAMESPACE') || define('APP_NAMESPACE', 'App');
 
@@ -20,8 +19,11 @@ defined('APP_NAMESPACE') || define('APP_NAMESPACE', 'App');
  | Composer Path
  | --------------------------------------------------------------------------
  |
- | The path that Composer's autoload file is expected to live. By default,
- | the vendor folder is in the Root directory, but you can customize that here.
+ | Menentukan lokasi file autoload milik Composer.
+ | File ini digunakan untuk memuat library eksternal
+ | yang diinstall melalui Composer.
+ |
+ | Secara default berada di folder vendor/autoload.php
  */
 defined('COMPOSER_PATH') || define('COMPOSER_PATH', ROOTPATH . 'vendor/autoload.php');
 
@@ -30,8 +32,11 @@ defined('COMPOSER_PATH') || define('COMPOSER_PATH', ROOTPATH . 'vendor/autoload.
  | Timing Constants
  |--------------------------------------------------------------------------
  |
- | Provide simple ways to work with the myriad of PHP functions that
- | require information to be in seconds.
+ | Konstanta waktu untuk mempermudah penulisan durasi
+ | tanpa harus menghitung detik secara manual.
+ |
+ | Contoh penggunaan:
+ | cache()->save('key', 'value', 5 * MINUTE);
  */
 defined('SECOND') || define('SECOND', 1);
 defined('MINUTE') || define('MINUTE', 60);
@@ -47,24 +52,14 @@ defined('DECADE') || define('DECADE', 315_360_000);
  | Exit Status Codes
  | --------------------------------------------------------------------------
  |
- | Used to indicate the conditions under which the script is exit()ing.
- | While there is no universal standard for error codes, there are some
- | broad conventions.  Three such conventions are mentioned below, for
- | those who wish to make use of them.  The CodeIgniter defaults were
- | chosen for the least overlap with these conventions, while still
- | leaving room for others to be defined in future versions and user
- | applications.
+ | Konstanta exit status digunakan sebagai kode keluar (exit code)
+ | saat aplikasi dihentikan menggunakan fungsi exit().
  |
- | The three main conventions used for determining exit status codes
- | are as follows:
- |
- |    Standard C/C++ Library (stdlibc):
- |       http://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
- |       (This link also contains other GNU-specific conventions)
- |    BSD sysexits.h:
- |       http://www.gsp.com/cgi-bin/man.cgi?section=3&topic=sysexits
- |    Bash scripting:
- |       http://tldp.org/LDP/abs/html/exitcodes.html
+ | Nilai-nilai ini mengikuti praktik umum dari sistem Unix/Linux.
+ */
+
+/**
+ * Exit tanpa error (program berhasil dijalankan)
  |
  */
 defined('EXIT_SUCCESS')        || define('EXIT_SUCCESS', 0);        // no errors
@@ -75,5 +70,5 @@ defined('EXIT_UNKNOWN_CLASS')  || define('EXIT_UNKNOWN_CLASS', 5);  // unknown c
 defined('EXIT_UNKNOWN_METHOD') || define('EXIT_UNKNOWN_METHOD', 6); // unknown class member
 defined('EXIT_USER_INPUT')     || define('EXIT_USER_INPUT', 7);     // invalid user input
 defined('EXIT_DATABASE')       || define('EXIT_DATABASE', 8);       // database error
-defined('EXIT__AUTO_MIN')      || define('EXIT__AUTO_MIN', 9);      // lowest automatically-assigned error code
-defined('EXIT__AUTO_MAX')      || define('EXIT__AUTO_MAX', 125);    // highest automatically-assigned error code
+defined('EXIT__AUTO_MIN')      || define('EXIT__AUTO_MIN', 9);      // Batas minimum error code otomatis
+defined('EXIT__AUTO_MAX')      || define('EXIT__AUTO_MAX', 125);    // Batas maksimum error code otomatis
