@@ -2,23 +2,44 @@
 
 namespace App\Controllers;
 
+// Menggunakan BaseController agar bisa memakai request, session, dll
 use App\Controllers\BaseController;
+// Menggunakan model Users untuk akses tabel users
 use App\Models\Users;
 
 class DaftarController extends BaseController
 {
+    /**
+     * Method index()
+     * 
+     * Berfungsi untuk menampilkan halaman pendaftaran (view daftar)
+     * Dipanggil saat user mengakses URL daftar
+     */
     public function index()
     {
+        // Data yang dikirim ke view
         $data = [
-            "title" => "Daftar - Solusam",
+            "title" => "Daftar - Solusam", // Judul halaman
         ];
+         // Menampilkan view 'daftar'
         return view('daftar', $data);
     }
 
+     /**
+     * Method register()
+     * 
+     * Berfungsi untuk memproses data registrasi user
+     * Method ini dipanggil saat form daftar disubmit (POST)
+     */
     public function register()
     {
+        // Inisialisasi model Users
         $userModel = new Users();
 
+         /**
+         * Aturan validasi input form
+         * Setiap field memiliki rule dan pesan error masing-masing
+         */
         $rules = [
             'username' => [
                 'rules' => 'required|min_length[5]|max_length[15]|is_unique[users.username]',
@@ -73,12 +94,23 @@ class DaftarController extends BaseController
                 ]
             ],
         ];
-
+        
+         /**
+         * Jika validasi gagal
+         * - Simpan error ke session
+         * - Kembalikan user ke halaman sebelumnya
+         * - Input lama tetap ada
+         */
         if (!$this->validate($rules)) {
             session()->setFlashdata('errors-daftar', $this->validator->getErrors());
             return redirect()->back()->withInput();
         }
 
+        
+        /**
+         * Ambil data dari form POST
+         * trim() untuk menghapus spasi
+         */
         $username = trim($this->request->getPost('username'));
         $email = trim($this->request->getPost('email'));
         $nama_lengkap = trim(strtoupper($this->request->getPost('nama_lengkap')));
@@ -90,33 +122,30 @@ class DaftarController extends BaseController
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         try {
-            // Data untuk tabel user
+            /**
+             * Data user yang akan disimpan ke database
+             */
             $userData = [
                 'kode_user' => $userModel->generateKode($nama_lengkap),
                 'username' => trim(strtolower($username)),
                 'email' => $email,
                 'password' => $hashedPassword,
+                'nama_lengkap' => $nama_lengkap,
+                'no_telp' => $no_telp,
+                'alamat' => $alamat, 
                 'role' => 2,
             ];
 
-            // Simpan data user
+            // Simpan data user ke database
             $userModel->insert($userData);
-            // Data untuk tabel client
-            $clientData = [
-                'user_id' => $userModel->getInsertID(),
-                 'client_id'    => null,
-                'nama_lengkap' => $nama_lengkap,
-                'no_telp' => $no_telp,
-                'alamat' => $alamat,
-                'jenis_usaha' => $jenis_usaha,
-            ];
 
-            // Simpan data client
-            $clientModel->insert($clientData);
-
+            // Redirect ke halaman login dengan pesan sukses
             return redirect()->to(base_url('/'))->with('login', 'Registrasi berhasil. Silakan login.');
         } catch (\Throwable $th) {
-            // Tangani error jika terjadi masalah saat penyimpanan
+             /**
+             * Jika terjadi error saat insert database
+             * Tangkap error agar aplikasi tidak crash
+             */
             session()->setFlashdata('errors-daftar', ['Terjadi kesalahan saat menyimpan data. Silakan coba lagi.']);
             return redirect()->back()->withInput();
         }
