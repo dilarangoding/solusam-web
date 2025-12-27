@@ -42,9 +42,15 @@ class PenjualanController extends BaseController
     {
         $data = [
             "title" => "Tambah Data Penjualan",
-            "sampah" => $this->sampahModel->where('client_id', session('clientId'))->findAll(),
-            "bayar" => $this->metodeBayarModel->where('client_id', session('clientId'))->findAll(),
-            "klien" => $this->klienModel->where('client_id', session('clientId'))->findAll(),
+            "sampah" => $this->sampahModel
+                ->where('client_id', session('clientId'))
+                ->findAll(),
+            "bayar" => $this->metodeBayarModel
+                ->where('client_id', session('clientId'))
+                ->findAll(),
+            "klien" => $this->klienModel
+                ->where('client_id', session('clientId'))
+                ->findAll(),
         ];
 
         return view('penjualan/create', $data);
