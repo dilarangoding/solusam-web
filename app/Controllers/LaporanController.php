@@ -2,8 +2,11 @@
 
 namespace App\Controllers;
 
+// Menggunakan BaseController sebagai parent
 use App\Controllers\BaseController;
+// Model Transaksi untuk pengambilan data laporan
 use App\Models\Transaksi;
+// Library PhpSpreadsheet untuk export Excel
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -12,13 +15,16 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class LaporanController extends BaseController
 {
+    // Properti untuk menyimpan instance model Transaksi
     protected $transaksiModel;
 
+     // Constructor untuk inisialisasi model
     public function __construct()
     {
         $this->transaksiModel = new Transaksi();
     }
 
+    // Menampilkan halaman utama laporan
     public function index()
     {
         $data = [
@@ -28,6 +34,7 @@ class LaporanController extends BaseController
         return view('laporan/index', $data);
     }
 
+    // Mengambil data laporan berdasarkan filter (AJAX)
     public function getLaporanData()
     {
         $tahun = $this->request->getPost('tahun');
@@ -36,11 +43,19 @@ class LaporanController extends BaseController
         $tanggalSelesai = $this->request->getPost('tanggal_selesai');
         $client_id = session()->get('clientId');
 
-        $laporanData = $this->transaksiModel->getLaporan($client_id, $tahun, $bulan, $tanggalMulai, $tanggalSelesai);
+        $laporanData = $this->transaksiModel->getLaporan(
+            $client_id, 
+            $tahun, 
+            $bulan, 
+            $tanggalMulai, 
+            $tanggalSelesai
+        );
 
+        // Mengembalikan data dalam format JSON
         return $this->response->setJSON($laporanData);
     }
-    
+
+    // Menampilkan halaman laporan pemasukan
     public function pemasukan()
     {
         $data = [
@@ -50,53 +65,87 @@ class LaporanController extends BaseController
         return view('laporan/pemasukan', $data);
     }
 
+     // Menampilkan halaman laporan pengeluaran
     public function pengeluaran()
     {
         $data = [
             "title" => "Data Laporan Pengeluaran",
         ];
-        
+
         return view('laporan/pengeluaran', $data);
     }
 
+    // Mengambil data pemasukan atau pengeluaran (AJAX)
     public function getDataInOut()
     {
+        // Mengambil filter dari request
         $tahun = $this->request->getPost('tahun');
         $bulan = $this->request->getPost('bulan');
         $tanggalMulai = $this->request->getPost('tanggal_mulai');
         $tanggalSelesai = $this->request->getPost('tanggal_selesai');
         $client_id = session()->get('clientId');
-        $jenis = $this->request->getPost('jenis');
+        $jenis = $this->request->getPost('jenis'); // in / out
 
-        $laporanData = $this->getDataResult($tahun, $bulan, $tanggalMulai, $tanggalSelesai, $jenis, $client_id);
+         // Memanggil fungsi helper
+        $laporanData = $this->getDataResult(
+            $tahun, 
+            $bulan, 
+            $tanggalMulai, 
+            $tanggalSelesai, 
+            $jenis, 
+            $client_id
+        );
     
         return $this->response->setJSON($laporanData);
     }
 
-    protected function getDataResult($tahun, $bulan, $tanggalMulai, $tanggalSelesai, $jenis, $client_id) {
+    // Fungsi helper untuk mengambil data laporan pemasukan/pengeluaran
+    protected function getDataResult(
+        $tahun, 
+        $bulan, 
+        $tanggalMulai, 
+        $tanggalSelesai, 
+        $jenis, 
+        $client_id) {
     
-        $laporanData = $this->transaksiModel->getDataInOutLaporan($client_id, $jenis, $tahun, $bulan, $tanggalMulai, $tanggalSelesai);
+        $laporanData = $this->transaksiModel->getDataInOutLaporan(
+            $client_id, 
+            $jenis, 
+            $tahun, 
+            $bulan, 
+            $tanggalMulai, 
+            $tanggalSelesai);
 
         return $laporanData;
     }
 
+    // Export laporan pemasukan ke Excel
     public function exportPemasukan()
     {
+         // Mengambil filter dari URL
         $tahun = $this->request->getGet('tahun');
         $bulan = $this->request->getGet('bulan');
         $tanggalMulai = $this->request->getGet('tanggal_mulai');
         $tanggalSelesai = $this->request->getGet('tanggal_selesai');
         $client_id = session()->get('clientId');
+        
+        // Mengambil data pemasukan (jenis = out)
+        $data = $this->transaksiModel->getDataInOutLaporan(
+            $client_id, 
+            'out', 
+            $tahun, 
+            $bulan, 
+            $tanggalMulai, 
+            $tanggalSelesai);
 
-        $data = $this->transaksiModel->getDataInOutLaporan($client_id, 'out', $tahun, $bulan, $tanggalMulai, $tanggalSelesai);
-
+         // Membuat spreadsheet baru
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Set title
+        // Judul sheet
         $sheet->setTitle('Laporan Pemasukan');
 
-        // Header styling
+         // Styling header Excel
         $headerStyle = [
             'font' => [
                 'bold' => true,
@@ -117,7 +166,7 @@ class LaporanController extends BaseController
             ]
         ];
 
-        // Set headers
+         // Header kolom Excel
         $headers = ['No', 'Tanggal', 'Nama Sampah', 'Jumlah (Kg)', 'Harga Jual', 'Total'];
         $col = 'A';
         foreach ($headers as $header) {
@@ -126,7 +175,7 @@ class LaporanController extends BaseController
             $col++;
         }
 
-        // Set data
+       // Mengisi data Excel/set data
         $row = 2;
         $totalBerat = 0;
         $totalPendapatan = 0;
@@ -144,7 +193,7 @@ class LaporanController extends BaseController
             $row++;
         }
 
-        // Add summary row
+         // Baris total
         $summaryRow = $row + 1;
         $sheet->setCellValue('C' . $summaryRow, 'TOTAL');
         $sheet->setCellValue('D' . $summaryRow, $totalBerat);
@@ -165,12 +214,12 @@ class LaporanController extends BaseController
         ];
         $sheet->getStyle('C' . $summaryRow . ':F' . $summaryRow)->applyFromArray($summaryStyle);
 
-        // Auto size columns
+        // Auto size kolom
         foreach (range('A', 'F') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
-        // Generate filename
+       // Download file
         $filename = 'Laporan_Pemasukan_' . date('Y-m-d_H-i-s') . '.xlsx';
 
         // Set headers for download
@@ -288,21 +337,33 @@ class LaporanController extends BaseController
 
     public function exportLaporan()
     {
+        // Mengambil parameter filter dari URL (GET)
         $tahun = $this->request->getGet('tahun');
         $bulan = $this->request->getGet('bulan');
         $tanggalMulai = $this->request->getGet('tanggal_mulai');
         $tanggalSelesai = $this->request->getGet('tanggal_selesai');
+         // Mengambil client_id dari session (klien yang sedang login)
         $client_id = session()->get('clientId');
 
-        $data = $this->transaksiModel->getLaporan($client_id, $tahun, $bulan, $tanggalMulai, $tanggalSelesai);
+        // Mengambil data laporan dari database melalui model Transaksi
+        // Data sudah difilter berdasarkan client dan parameter tanggal
+        $data = $this->transaksiModel->getLaporan(
+            $client_id, 
+            $tahun, 
+            $bulan, 
+            $tanggalMulai, 
+            $tanggalSelesai
+        );
 
+        // Membuat objek Spreadsheet baru (PhpSpreadsheet)
         $spreadsheet = new Spreadsheet();
+        // Mengambil sheet aktif
         $sheet = $spreadsheet->getActiveSheet();
-
-        // Set title
+        
+        // Mengatur judul sheet Excel
         $sheet->setTitle('Laporan Keuangan');
 
-        // Header styling
+        // Style untuk header tabel (baris pertama)
         $headerStyle = [
             'font' => [
                 'bold' => true,
@@ -323,8 +384,17 @@ class LaporanController extends BaseController
             ]
         ];
 
-        // Set headers
-        $headers = ['No', 'Periode', 'Jumlah Transaksi', 'Total Pemasukan', 'Total Pengeluaran', 'Keuntungan/Kerugian'];
+       // Daftar judul kolom pada tabel Excel
+        $headers = [
+            'No', 
+            'Periode', 
+            'Jumlah Transaksi', 
+            'Total Pemasukan', 
+            'Total Pengeluaran', 
+            'Keuntungan/Kerugian'
+        ];
+
+        // Menuliskan header ke baris pertama Excel
         $col = 'A';
         foreach ($headers as $header) {
             $sheet->setCellValue($col . '1', $header);
@@ -332,13 +402,15 @@ class LaporanController extends BaseController
             $col++;
         }
 
-        // Set data
+       // Baris awal untuk data (setelah header)
         $row = 2;
+        // Variabel penampung total keseluruhan
         $totalTransaksi = 0;
         $totalPemasukan = 0;
         $totalPengeluaran = 0;
         $totalKeuntungan = 0;
-        
+
+          // Mengisi data laporan ke dalam Excel
         foreach ($data as $index => $item) {
             $sheet->setCellValue('A' . $row, $index + 1);
             $sheet->setCellValue('B' . $row, $item['periode']);
@@ -346,7 +418,8 @@ class LaporanController extends BaseController
             $sheet->setCellValue('D' . $row, 'Rp ' . number_format($item['total_pendapatan'], 0, ',', '.'));
             $sheet->setCellValue('E' . $row, 'Rp ' . number_format($item['total_pengeluaran'], 0, ',', '.'));
             $sheet->setCellValue('F' . $row, 'Rp ' . number_format($item['total_keuntungan'], 0, ',', '.'));
-            
+
+            // Menjumlahkan total keseluruhan
             $totalTransaksi += $item['jumlah'];
             $totalPemasukan += $item['total_pendapatan'];
             $totalPengeluaran += $item['total_pengeluaran'];
@@ -354,15 +427,16 @@ class LaporanController extends BaseController
             $row++;
         }
 
-        // Add summary row
+       // Menentukan baris untuk total akhirw
         $summaryRow = $row + 1;
+         // Menampilkan total keseluruhan di baris akhir
         $sheet->setCellValue('B' . $summaryRow, 'TOTAL');
         $sheet->setCellValue('C' . $summaryRow, $totalTransaksi);
         $sheet->setCellValue('D' . $summaryRow, 'Rp ' . number_format($totalPemasukan, 0, ',', '.'));
         $sheet->setCellValue('E' . $summaryRow, 'Rp ' . number_format($totalPengeluaran, 0, ',', '.'));
         $sheet->setCellValue('F' . $summaryRow, 'Rp ' . number_format($totalKeuntungan, 0, ',', '.'));
         
-        // Style summary row
+         // Style khusus untuk baris TOTAL
         $summaryStyle = [
             'font' => ['bold' => true],
             'fill' => [
@@ -377,21 +451,24 @@ class LaporanController extends BaseController
         ];
         $sheet->getStyle('B' . $summaryRow . ':F' . $summaryRow)->applyFromArray($summaryStyle);
 
-        // Auto size columns
+        // Mengatur lebar kolom otomatis agar rapi
         foreach (range('A', 'F') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
-        // Generate filename
+        // Membuat nama file Excel dengan timestamp
         $filename = 'Laporan_Keuangan_' . date('Y-m-d_H-i-s') . '.xlsx';
 
-        // Set headers for download
+         // Header HTTP agar browser mengunduh file Excel
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
 
+        // Menulis file Excel ke output browser
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
+
+        // Menghentikan eksekusi setelah file dikirim
         exit;
     }
 }
