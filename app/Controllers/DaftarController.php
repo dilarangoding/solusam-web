@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\Client;
 use App\Models\Users;
 
 class DaftarController extends BaseController
@@ -18,7 +17,6 @@ class DaftarController extends BaseController
 
     public function register()
     {
-        $clientModel = new Client();
         $userModel = new Users();
 
         $rules = [
@@ -74,12 +72,6 @@ class DaftarController extends BaseController
                     'required' => 'Alamat wajib diisi',
                 ]
             ],
-            'jenis_usaha' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Jenis usaha wajib diisi',
-                ]
-            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -92,7 +84,6 @@ class DaftarController extends BaseController
         $nama_lengkap = trim(strtoupper($this->request->getPost('nama_lengkap')));
         $no_telp = $this->request->getPost('no_telp');
         $alamat = $this->request->getPost('alamat');
-        $jenis_usaha = $this->request->getPost('jenis_usaha');
         $password = $this->request->getPost('password');
 
         // Hash password sebelum disimpan
