@@ -64,35 +64,6 @@ class Transaksi extends Model
         return $query; // Kembalikan hasil query
     }
 
-    // public function getLaporan($client_id, $tahun = null, $bulan = null, $tanggal_mulai = null, $tanggal_selesai = null)
-    // {
-    //     $builder = $this->db->table('transaksi t');
-    //     $builder->select(
-    //         'COUNT(t.id) as jumlah, 
-    //         SUM(CASE WHEN t.jenis = "in" THEN (t.jumlah * s.harga_jual) ELSE 0 END) as total_pendapatan,
-    //         SUM(CASE WHEN t.jenis = "out" THEN (t.jumlah * s.harga_beli) ELSE 0 END) as total_pengeluaran,
-    //         SUM(CASE WHEN t.jenis = "in" THEN (t.jumlah * s.harga_jual) ELSE 0 END) - SUM(CASE WHEN t.jenis = "out" THEN (t.jumlah * s.harga_beli) ELSE 0 END) as total_keuntungan'
-    //     );
-    //     $builder->join('data_sampah s', 's.id = t.sampah_id');
-    //     $builder->where('t.client_id', $client_id);
-
-    //     if ($tahun) {
-    //         $builder->where('YEAR(t.tanggal)', $tahun);
-    //     }
-
-    //     if ($bulan) {
-    //         $builder->where('MONTH(t.tanggal)', $bulan);
-    //     }
-
-    //     if ($tanggal_mulai && $tanggal_selesai) {
-    //         $builder->where('DATE(t.tanggal) >=', $tanggal_mulai);
-    //         $builder->where('DATE(t.tanggal) <=', $tanggal_selesai);
-    //     }
-
-    //     $query = $builder->get()->getRowArray();
-    //     return $query;
-    // }
-
    public function getLaporan($client_id, $tahun = null, $bulan = null, $tanggal_mulai = null, $tanggal_selesai = null)
 {
     $builder = $this->db->table('transaksi t'); // Membuat query builder untuk tabel transaksi (alias t)
