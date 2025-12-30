@@ -1,115 +1,46 @@
-<?= $this->extend('template/index'); ?> <!--Mengambil kerangka dasar website (sidebar, navbar, footer)-->
-<?php echo $this->section('content'); //Menandakan bahwa semua kode di bawahnya adalah isi utama yang akan dimasukkan ke dalam template
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupa Password - SOLUSAM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center vh-100">
 
-function formatRupiah($number)
-{
-    return 'Rp ' . number_format($number, 0, ',', '.');
-}
-?>
-
-<div class="container-fluid my-4">
-    <p class="text-end text-muted"><i class="ti ti-calendar-week"></i><?= $tanggal; ?></p>
-
-    <!-- Judul -->
-    <h1 class="h3 fw-bold text-dark">Dashboard SOLUSAM</h1>
-    <p class="text-muted">
-        Ringkasan data dan statistik sistem
-        
-    </p>
-
-    <!-- Cards -->
-    <div class="row g-4 mt-2">
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <p class="text-muted small mb-1">Total Transaksi</p>
-                    <h5 class="fw-bold"><?= $ringkasanBulan['jumlah']; ?></h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <p class="text-muted small mb-1">Total Berat Sampah</p>
-                    <h5 class="fw-bold"><?= $ringkasanBulan['total_jml']; ?> kg</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <p class="text-muted small mb-1">Total Uang Masuk</p>
-                    <?php 
-                        $totalUangMasuk = $ringkasanBulan['total_pendapatan'];
-                        $warnaUangMasuk = $totalUangMasuk < 0 ? 'text-danger' : 'text-success';
-                    ?>
-                    <h5 class="fw-bold <?= $warnaUangMasuk; ?>"><?= formatRupiah($totalUangMasuk); ?></h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <p class="text-muted small mb-1">Total Uang Keluar</p>
-                    <h5 class="fw-bold text-danger"><?= formatRupiah($ringkasanBulan['total_pengeluaran']); ?></h5>
-                </div>
-            </div>
-        </div>
+<div class="card shadow-sm p-4" style="width: 380px;">
+    <div class="text-center mb-3">
+         <img src="<?= base_url('assets/img/logosolus.png') ?>" 
+                alt="Logo Solusam"
+                class="mx-auto d-block rounded-circle shadow-sm"
+                style="width: 64px; height: 64px; object-fit: cover;">
+        <h4 class="fw-bold">SOLUSAM</h4>
+        <p class="text-muted">Solusi Sampah - Sistem Manajemen Sampah</p>
     </div>
 
-    <!-- Transactions & Summary menggunakan looping--> 
-    <div class="row g-4 mt-3">
-        <!-- Transaksi Terbaru -->
-        <div class="col-12 col-lg-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="fw-semibold text-dark mb-3">Transaksi Terbaru</h5>
-                    <ul class="list-unstyled">
-                        <?php
-                        
-                        //Jika jenis bernilai 'in', maka sistem menganggap transaksi tersebut sebagai pembelian, yaitu admin membeli sampah dari warga, sehingga perhitungan menggunakan harga_beli, begitu juga sebaliknya
-                        foreach ($lastTransaksi as $row) {
-                            $harga = $row['jenis'] == 'in' ? $row['harga_beli'] : $row['harga_jual'];
-                            $jenis = $row['jenis'] == 'in' ? 'Pembelian' : 'Penjualan';
-                            $total = $harga * $row['jumlah'];
-                        ?>
-                            <li class="d-flex justify-content-between align-items-start bg-success bg-opacity-10 p-2 rounded mb-2">
-                                <div>
-                                    <p class="fw-medium text-dark mb-0"><?= $jenis . ' - ' . $row['nama_sampah']; ?> </p>
-                                    <small class="text-muted"><?= $row['tanggal']; ?></small>
-                                </div>
-                                <span class="text-success fw-medium"><?= formatRupiah($total); ?></span>
-                            </li>
-                        <?php } ?>
-                    </ul>
-                </div>
-            </div>
+    <h5 class="text-center mb-3">Lupa Password</h5>
+
+    <?php if(session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger py-2"><?= session()->getFlashdata('error'); ?></div>
+    <?php endif; ?>
+
+    <?php if(session()->getFlashdata('success')): ?>
+        <div class="alert alert-success py-2"><?= session()->getFlashdata('success'); ?></div>
+    <?php endif; ?>
+
+    <form action="<?= base_url('forgot-password/send'); ?>" method="post">
+        <div class="mb-3">
+            <label for="email" class="form-label">Alamat Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email terdaftar" required>
         </div>
 
-        <!-- Ringkasan Bulan Ini -->
-        <div class="col-12 col-lg-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="fw-semibold text-dark mb-3">Ringkasan Bulan Ini <?= date('M'); ?></h5>
-                    <ul class="list-unstyled small">
-                        <li class="d-flex justify-content-between mb-2">
-                            <span>Penjualan</span> <span class="text-success"><?= formatRupiah($ringkasanBulan['total_pendapatan']); ?></span>
-                        </li>
-                        <li class="d-flex justify-content-between mb-2">
-                            <span>Pembelian</span> <span class="text-success"><?= formatRupiah($ringkasanBulan['total_pengeluaran']); ?></span>
-                        </li>
-                        <li class="d-flex justify-content-between mb-2">
-                            <span>Keuntungan</span> <span class="text-success"><?= formatRupiah($ringkasanBulan['total_keuntungan']); ?></span>
-                        </li>
-                        <li class="d-flex justify-content-between">
-                            <span>Total Berat</span> <span class="fw-medium"><?= $ringkasanBulan['total_jml']; ?> kg</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+        <button type="submit" class="btn btn-success w-100">Kirim Link Reset</button>
+    </form>
+
+    <div class="text-center mt-3">
+        <a href="<?= base_url('login'); ?>" class="text-decoration-none">Kembali ke Login</a>
     </div>
 </div>
 
-
-<?= $this->endSection(); ?>
+</body>
+</html>
