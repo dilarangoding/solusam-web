@@ -1,109 +1,112 @@
-<?= $this->extend('template/index'); ?> // Menggunakan template utama
-<?= $this->section('content'); ?> // Membuka section konten utama
+<?= $this->extend('template/index'); ?>
+<?= $this->section('content'); ?>
 
-<h1 class="h3 fw-bold text-dark"><?= $title; ?></h1> // Judul halaman
-<p class="text-muted">Kelola data sampah</p> // Subjudul
+<h1 class="h3 fw-bold text-dark"><?= $title; ?></h1>
+<p class="text-muted">Kelola data sampah</p>
 
-<a href="<?= base_url('pembelian/create') ?>" class="btn btn-success btn-sm mb-3"> // Tombol menuju halaman tambah data
-    <i class="ti ti-plus"></i> Tambah Data // Icon dan tulisan tombol
+<a href="<?= base_url('pembelian/create') ?>" class="btn btn-success btn-sm mb-3">
+    <i class="ti ti-plus"></i> Tambah Data
 </a>
 
-<div class="card shadow-sm border-0"> // Card container data
-    <div class="card-body"> // Body card
-        <h5 class="card-title mb-3"><?= $title; ?></h5> // Judul card
-        <div class="table-responsive"> // Membuat tabel responsif
-            <table class="table table-bordered table-hover align-middle dataTable"> // Tabel data + DataTables
-                <thead class="table-success"> // Header tabel dengan background hijau muda
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <h5 class="card-title mb-3"><?= $title; ?></h5>
+        <div class="table-responsive">
+            <!--fitur tabel interaktif-->
+            <table class="table table-bordered table-hover align-middle dataTable"> 
+                <thead class="table-success">
                     <tr>
-                        <th scope="col">No</th> // Kolom nomor
-                        <th scope="col">Tanggal</th> // Kolom tanggal
-                        <th scope="col">Nama Sampah</th> // Kolom nama sampah
-                        <th scope="col">Jumlah</th> // Kolom jumlah pembelian
-                        <th scope="col">Harga</th> // Kolom harga satuan
-                        <th scope="col">Total</th> // Kolom harga total
-                        <th scope="col">Klien</th> // Kolom nama klien
-                        <th scope="col">Aksi</th> // Kolom tombol aksi
+                        <th scope="col">No</th>
+                        <th scope="col">Tanggal</th>
+                        <th scope="col">Nama Sampah</th>
+                        <th scope="col">Jumlah</th>
+                        <th scope="col">Harga</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Klien</th>
+                        <th scope="col">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    function formatRupiah($number) // Fungsi untuk mengubah angka menjadi format Rupiah
+                    function formatRupiah($number)
                     {
-                        return 'Rp ' . number_format($number, 0, ',', '.'); // Format: Rp 10.000
+                        return 'Rp ' . number_format($number, 0, ',', '.');
                     }
 
-                    $no = 1; // Nomor urut tabel dimulai dari 1
-                    foreach ($data as $row) { // Loop seluruh data pembelian
-                        $total = $row['harga_beli'] * $row['jumlah']; // Hitung total harga
+                    $no = 1;
+                    //Sistem menghitung berapa total uang yang harus dikeluarkan admin untuk membayar nasabah tersebut berdasarkan berat sampah yang dibawa
+                    foreach ($data as $row) {
+                        $total = $row['harga_beli'] * $row['jumlah'];
                     ?>
                         <tr>
-                            <td><?= $no++; ?></td> // Menampilkan nomor urut
-                            <td><?= $row['tanggal']; ?></td> // Menampilkan tanggal transaksi
-                            <td><?= $row['nama_sampah']; ?></td> // Menampilkan nama sampah
-                            <td><?= $row['jumlah']; ?></td> // Menampilkan jumlah pembelian
-                            <td><?= formatRupiah($row['harga_beli']); ?></td> // Menampilkan harga beli dalam format Rupiah
-                            <td class="text-success fw-semibold"><?= formatRupiah($total); ?></td> // Total harga (teks hijau tebal)
-                            <td><?= $row['nama_lengkap']; ?></td> // Menampilkan nama klien
+                            <td><?= $no++; ?></td>
+                            <td><?= $row['tanggal']; ?></td>
+                            <td><?= $row['nama_sampah']; ?></td>
+                            <td><?= $row['jumlah']; ?></td>
+                            <td><?= formatRupiah($row['harga_beli']); ?></td>
+                            <td class="text-success fw-semibold"><?= formatRupiah($total); ?></td>
+                            <td><?= $row['nama_lengkap']; ?></td>                            
                             <td>
-                                <a href="<?= base_url('pembelian/edit/' . $row['id']) ?>" class="btn btn-outline-primary btn-sm"> // Tombol edit
-                                    <i class="ti ti-pencil"></i> // Icon pensil
+                                <a href="<?= base_url('pembelian/edit/' . $row['id']) ?>" class="btn btn-outline-primary btn-sm">
+                                    <i class="ti ti-pencil"></i>
                                 </a>
-
-                                <button 
-                                    type="button"
-                                    data-nama="<?= $row['nama_sampah'] ?>" // Menyimpan nama sampah untuk dialog hapus
-                                    data-id="<?= $row['id'] ?>" // Menyimpan id untuk proses hapus
-                                    onclick="hapus(this)" // Ketika tombol diklik, jalankan fungsi hapus()
-                                    class="btn btn-outline-danger btn-sm">
-                                    <i class="ti ti-trash"></i> // Icon tong sampah
+                                <button type="button" data-nama="<?= $row['nama_sampah'] ?>" data-id="<?= $row['id'] ?>"
+                                    onclick="hapus(this)" class="btn btn-outline-danger btn-sm">
+                                    <i class="ti ti-trash"></i>
                                 </button>
                             </td>
                         </tr>
-                    <?php } ?> // Akhir loop data
+                    <?php } ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<?= $this->endSection(); ?> // Penutup section konten
+<?= $this->endSection(); ?>
 
-<?= $this->section('js'); ?> // Membuka section javascript
+
+<?= $this->section('js'); ?>
 <script>
-    function hapus(event) { // Fungsi hapus data
-        let nama = $(event).data('nama') // Ambil nama sampah dari atribut data-nama
-        let id = $(event).data('id') // Ambil id dari atribut data-id
+    function hapus(event) {
+        let nama = $(event).data('nama')
+        let id = $(event).data('id')
 
-        Swal.fire({ // Tampilkan popup SweetAlert konfirmasi hapus
-            title: 'Apakah anda yakin?', 
-            html: `Ingin menghapus data <strong>${nama}</strong>`, // Pesan yang menampilkan nama sampah
-            icon: 'warning', // Icon warning
-            showCancelButton: true, // Tampilkan tombol batal
-            confirmButtonColor: '#3085d6', // Warna tombol YES
-            cancelButtonColor: '#d33', // Warna tombol CANCEL
-            confirmButtonText: 'Yes', // Tulisan tombol YES
-        }).then((result) => { // Ketika pengguna memilih tombol
-            if (result.value) { // Jika menekan YES
-                $.ajax({ // Lakukan AJAX request untuk hapus
-                        url: "<?= base_url('pembelian/delete'); ?>", // URL tujuan hapus
-                        type: 'POST', // Metode POST
-                        data: { id }, // Data dikirim berupa id data
+        //fitur hapus data secara aman dan interaktif
+        Swal.fire({
+            title: 'Apakah anda yakin?',
+            html: `Ingin menghapus data <strong>${nama}</strong>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                        url: "<?= base_url('pembelian/delete'); ?>",
+                        type: 'POST',
+                        data: {
+                            id,
+                        }
                     })
-                    .done(function(res) { // Jika request berhasil
+                    .done(function(res) {
                         swal.fire({
-                            title: res.title, // Judul alert dari server
-                            text: res.text, // Pesan alert dari server
-                            icon: res.icon, // Icon (success / error)
-                            showConfirmButton: false, // Tidak menampilkan tombol OK
-                            timer: 2000 // Alert otomatis hilang dalam 2 detik
+                            title: res.title,
+                            text: res.text,
+                            icon: res.icon,
+                            showConfirmButton: false,
+                            timer: 2000
                         }).then(() => {
-                            location.reload(); // Reload halaman setelah alert hilang
+                            location.reload();
                         });
                     })
-                    .fail(function() { // Jika AJAX error
-                        swal.fire('Oops...', 'Something went wrong with ajax !', 'error'); // Tampilkan error
+                    .fail(function() {
+                        swal.fire('Oops...', 'Something went wrong with ajax !', 'error');
                     });
             }
+
         })
     }
 </script>
-<?= $this->endSection(); ?> // Menutup section javascript
+<?= $this->endSection(); ?>
