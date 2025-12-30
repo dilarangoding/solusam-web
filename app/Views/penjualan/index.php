@@ -48,6 +48,7 @@
                             <td><?= $row['metode_bayar']; ?></td>
                             <td>
 
+                                <!--fitur hapus-->
                                 <button type="button"
                                         data-nama="<?= $row['nama_sampah'] ?>"
                                         data-id="<?= $row['id'] ?>"
@@ -76,6 +77,8 @@
         let nama = $(event).data('nama');
         let id = $(event).data('id');
 
+
+        //pop up konfirmasi hapus data
         Swal.fire({
             title: 'Apakah anda yakin?',
             html: `Ingin menghapus data <strong>${nama}</strong>`,
@@ -87,6 +90,8 @@
         }).then((result) => {
             if (result.value) {
 
+
+                //Jika admin klik "Yes", browser mengirim data ID ke server (penjualan/delete) tanpa memuat ulang (refresh) halaman
                 $.ajax({
                     url: "<?= base_url('penjualan/delete'); ?>",
                     type: 'POST',
