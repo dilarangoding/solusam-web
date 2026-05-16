@@ -8,7 +8,6 @@
     <i class="ti ti-plus"></i> Tambah Data
 </a>
 
-
 <div class="card shadow-sm border-0">
     <div class="card-body">
         <h5 class="card-title mb-3"><?= $title; ?></h5>
@@ -35,7 +34,7 @@
                     }
 
                     $no = 1;
-                    //Sistem menghitung berapa total uang yang harus dikeluarkan admin untuk membayar nasabah tersebut berdasarkan berat sampah yang dibawa
+                    
                     foreach ($data as $row) {
                         $total = $row['harga_beli'] * $row['jumlah'];
                     ?>
@@ -64,7 +63,6 @@
     </div>
 </div>
 <?= $this->endSection(); ?>
-
 
 <?= $this->section('js'); ?>
 <script>

@@ -2,7 +2,7 @@
 function isActive($url, $strict = false)
 {
     $uri = service('uri');
-    $segment = $uri->getSegment(1); // Ambil segmen pertama dari
+    $segment = $uri->getSegment(1); 
     $active = 'bg-light text-active rounded';
     if ($strict) {
         return $segment === $url ? $active : '';

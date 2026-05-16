@@ -1,5 +1,5 @@
 <?= $this->extend('template/index'); ?> <!--Mengambil kerangka dasar website (sidebar, navbar, footer)-->
-<?php echo $this->section('content'); //Menandakan bahwa semua kode di bawahnya adalah isi utama yang akan dimasukkan ke dalam template
+<?php echo $this->section('content'); 
 
 function formatRupiah($number)
 {
@@ -67,7 +67,7 @@ function formatRupiah($number)
                     <ul class="list-unstyled">
                         <?php
                         
-                        //Jika jenis bernilai 'in', maka sistem menganggap transaksi tersebut sebagai pembelian, yaitu admin membeli sampah dari warga, sehingga perhitungan menggunakan harga_beli, begitu juga sebaliknya
+                        
                         foreach ($lastTransaksi as $row) {
                             $harga = $row['jenis'] == 'in' ? $row['harga_beli'] : $row['harga_jual'];
                             $jenis = $row['jenis'] == 'in' ? 'Pembelian' : 'Penjualan';
@@ -110,6 +110,5 @@ function formatRupiah($number)
         </div>
     </div>
 </div>
-
 
 <?= $this->endSection(); ?>

@@ -1,44 +1,43 @@
-<?= $this->extend('template/index'); ?> // Meng-extend template utama
-<?= $this->section('content'); ?> // Membuka section konten
+<?= $this->extend('template/index'); ?> 
+<?= $this->section('content'); ?> 
 
-<h1 class="h3 fw-bold text-dark"><?= $title; ?></h1> // Menampilkan judul halaman
-<p class="text-muted">Kelola data laporan pendapatan</p> // Subjudul halaman
+<h1 class="h3 fw-bold text-dark"><?= $title; ?></h1>
+<p class="text-muted">Kelola data laporan pendapatan</p>
 
-<div class="row g-4"> // Row untuk card ringkasan
-    <div class="col-12 col-sm-6 col-lg-3"> // Kolom card
-        <div class="card shadow-sm h-100"> // Card tampilan
-            <div class="card-body"> // Isi card
-                <p class="text-muted small mb-1"><i class="ti ti-chart-line text-success"></i> Total Pemasukan</p> // Label
-                <h5 class="fw-bold text-success" id="total-uang-masuk"></h5> // Total pemasukan dinamis
+<div class="row g-4"> 
+    <div class="col-12 col-sm-6 col-lg-3"> 
+        <div class="card shadow-sm h-100"> 
+            <div class="card-body"> 
+                <p class="text-muted small mb-1"><i class="ti ti-chart-line text-success"></i> Total Pemasukan</p> 
+                <h5 class="fw-bold text-success" id="total-uang-masuk"></h5> 
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3"> // Kolom card kedua
+    <div class="col-12 col-sm-6 col-lg-3">
         <div class="card shadow-sm h-100">
             <div class="card-body">
-                <p class="text-muted small mb-1">Total Berat Sampah</p> // Label berat sampah
-                <h5 class="fw-bold" id="total-berat"></h5> // Total berat sampah dinamis
+                <p class="text-muted small mb-1">Total Berat Sampah</p> 
+                <h5 class="fw-bold" id="total-berat"></h5> 
             </div>
         </div>
     </div>
 </div>
 
-
-<div class="card shadow-sm border-0 mt-4"> // Card utama untuk tabel laporan
+<div class="card shadow-sm border-0 mt-4"> 
     <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3"> // Header card
-            <h5 class="card-title mb-0"><?= $title; ?></h5> // Judul card
-            <button class="btn btn-success" id="export-excel"> // Tombol export Excel
+        <div class="d-flex justify-content-between align-items-center mb-3"> 
+            <h5 class="card-title mb-0"><?= $title; ?></h5> 
+            <button class="btn btn-success" id="export-excel"> 
                 <i class="ti ti-file-export"></i> Export Excel
             </button>
         </div>
 
         <!-- Filter Laporan -->
-        <div class="row mb-3"> // Row filter
-            <div class="col-md-3"> // Kolom filter utama
+        <div class="row mb-3"> 
+            <div class="col-md-3"> 
                 <label class="form-label">Pilih Filter</label>
-                <select class="form-select" id="filter-type"> // Dropdown jenis filter
+                <select class="form-select" id="filter-type"> 
                     <option value="tahun">Tahun</option>
                     <option value="bulan">Bulan</option>
                     <option value="harian">Harian</option>
@@ -46,31 +45,31 @@
             </div>
 
             <!-- Filter Tahun -->
-            <div class="col-md-3" id="tahun-filter"> // Input filter tahun
+            <div class="col-md-3" id="tahun-filter"> 
                 <label class="form-label">Tahun</label>
-                <input type="number" class="form-control" id="tahun"> // Input tahun
+                <input type="number" class="form-control" id="tahun"> 
             </div>
 
             <!-- Filter Bulan -->
-            <div class="col-md-6" id="bulan-filter" style="display: none;"> // Filter bulan disembunyikan dulu
+            <div class="col-md-6" id="bulan-filter" style="display: none;"> 
                 <div class="row">
                     <div class="col-md-6">
                         <label class="form-label">Bulan</label>
-                        <select class="form-select" id="bulan"> // Dropdown bulan
+                        <select class="form-select" id="bulan"> 
                         <?php
-                            $currentMonth = date('n'); // Mendapatkan bulan saat ini 1-12
+                            $currentMonth = date('n'); 
 
-                            for ($i = 1; $i <= 12; $i++) { // Loop 12 bulan
-                                $monthName = date('F', mktime(0, 0, 0, $i, 1)); // Nama bulan
-                                $selected = ($i == $currentMonth) ? 'selected' : ''; // Menandai bulan sekarang
-                                echo '<option value="' . $i . '" ' . $selected . '>' . $monthName . '</option>'; // Cetak opsi bulan
+                            for ($i = 1; $i <= 12; $i++) { 
+                                $monthName = date('F', mktime(0, 0, 0, $i, 1)); 
+                                $selected = ($i == $currentMonth) ? 'selected' : ''; 
+                                echo '<option value="' . $i . '" ' . $selected . '>' . $monthName . '</option>'; 
                             }
                         ?>
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Tahun</label>
-                        <input type="number" class="form-control" id="tahun-bulan"> // Input tahun untuk bulan
+                        <input type="number" class="form-control" id="tahun-bulan"> 
                     </div>
                 </div>
             </div>
@@ -80,88 +79,81 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label class="form-label">Tanggal Mulai</label>
-                        <input type="date" class="form-control" id="tanggal-mulai"> // Input tanggal mulai
+                        <input type="date" class="form-control" id="tanggal-mulai"> 
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Tanggal Selesai</label>
-                        <input type="date" class="form-control" id="tanggal-selesai"> // Input tanggal selesai
+                        <input type="date" class="form-control" id="tanggal-selesai"> 
                     </div>
                 </div>
             </div>
         </div>
 
-
-        <div class="table-responsive"> // Wrapper table responsif
-            <table class="table table-bordered table-hover align-middle dataTable"> // Tabel data
-                <thead class="table-success"> // Header tabel warna hijau
+        <div class="table-responsive"> 
+            <table class="table table-bordered table-hover align-middle dataTable">
+                <thead class="table-success">hijau
                     <tr>
-                        <th scope="col">No</th> // Kolom nomor
-                        <th scope="col">Tanggal</th> // Kolom tanggal
-                        <th scope="col">Nama Sampah</th> // Kolom nama sampah
-                        <th scope="col">Jumlah (Kg)</th> // Kolom jumlah
-                        <th scope="col">Harga</th> // Kolom harga
-                        <th scope="col">Total</th> // Kolom total pendapatan
+                        <th scope="col">No</th> 
+                        <th scope="col">Tanggal</th> 
+                        <th scope="col">Nama Sampah</th> 
+                        <th scope="col">Jumlah (Kg)</th> 
+                        <th scope="col">Harga</th> 
+                        <th scope="col">Total</th>
                     </tr>
                 </thead>
-                <tbody> // Isi tabel
+                <tbody> 
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<?= $this->endSection(); ?> // Menutup section konten
+<?= $this->endSection(); ?> 
 
-
-<?= $this->section('js'); ?> // Membuka section javascript
+<?= $this->section('js'); ?> 
 <script>
-    $('#tahun-bulan').val(new Date().getFullYear()); // Set tahun default untuk filter bulan
-    $('#tahun').val(new Date().getFullYear()); // Set tahun default untuk filter tahun
-    let tahun = new Date().getFullYear(); // Simpan tahun saat ini
-    loadLaporan('tahun', tahun); // Load laporan berdasarkan tahun saat halaman dibuka
+    $('#tahun-bulan').val(new Date().getFullYear()); 
+    $('#tahun').val(new Date().getFullYear());
+    let tahun = new Date().getFullYear(); 
+    loadLaporan('tahun', tahun); 
 
-    // Function untuk menampilkan data laporan
     function loadLaporan(filterType, tahun = null, bulan = null, tanggalMulai = null, tanggalSelesai = null) {
         $.ajax({
-            url: "<?= base_url('getDataInOut'); ?>", // Endpoint API untuk ambil data pemasukan/pengeluaran
-            type: "POST", // Metode POST
+            url: "<?= base_url('getDataInOut'); ?>",
+            type: "POST", 
             data: {
-                filter_type: filterType, // Menentukan filter
-                tahun: tahun, // Tahun
-                bulan: bulan, // Bulan
-                tanggal_mulai: tanggalMulai, // Tanggal mulai
-                tanggal_selesai: tanggalSelesai, // Tanggal selesai
-                jenis: 'out' // Jenis data: 'out' = pemasukan
+                filter_type: filterType, 
+                tahun: tahun, 
+                bulan: bulan,
+                tanggal_mulai: tanggalMulai,
+                tanggal_selesai: tanggalSelesai, 
+                jenis: 'out' 
             },
-            success: function(response) { // Ketika berhasil
-                console.log(response); // Debug log
+            success: function(response) { 
+                console.log(response); 
 
-                // Inisialisasi total
-                let totalBerat = 0; // Total berat sampah
-                let totalUangMasuk = 0; // Total pendapatan
+                let totalBerat = 0; 
+                let totalUangMasuk = 0; 
 
-                // Jika response array
                 if (Array.isArray(response)) {
-                    response.forEach(function(data) { // Loop data
-                        totalBerat += parseFloat(data.jumlah) || 0; // Menambah berat
-                        totalUangMasuk += parseFloat(data.total_pendapatan) || 0; // Menambah pendapatan
+                    response.forEach(function(data) { 
+                        totalBerat += parseFloat(data.jumlah) || 0; 
+                        totalUangMasuk += parseFloat(data.total_pendapatan) || 0; 
                     });
 
-                    totalUangMasukFormatted = 'Rp ' + totalUangMasuk.toLocaleString('id-ID'); // Format Rupiah
-
-                    $('#total-berat').text(totalBerat.toLocaleString('id-ID') + ' kg'); // Update card berat
-                    $('#total-uang-masuk').text(totalUangMasukFormatted); // Update card pemasukan
+                    totalUangMasukFormatted = 'Rp ' + totalUangMasuk.toLocaleString('id-ID'); 
+                    $('#total-berat').text(totalBerat.toLocaleString('id-ID') + ' kg'); 
+                    $('#total-uang-masuk').text(totalUangMasukFormatted); 
 
                 } else {
-                    $('#total-berat').text('0 kg'); // Default jika kosong
-                    $('#total-uang-masuk').text('Rp 0'); // Default jika kosong
+                    $('#total-berat').text('0 kg'); 
+                    $('#total-uang-masuk').text('Rp 0'); 
                 }
 
-                $('table tbody').empty(); // Kosongkan tabel
+                $('table tbody').empty(); 
 
-                // Isi tabel
                 $.each(response, function(i, item) {
-                    let totalPendapatan = parseFloat(item.total_pendapatan) || 0; // Hitung total
-                    let hargaJual = parseFloat(item.harga_jual) || 0; // Harga jual
+                    let totalPendapatan = parseFloat(item.total_pendapatan) || 0;
+                    let hargaJual = parseFloat(item.harga_jual) || 0; 
                     $('table tbody').append(`
                             <tr>
                                 <td>${i+1}</td> // Nomor urut

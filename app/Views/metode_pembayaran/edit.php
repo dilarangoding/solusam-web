@@ -1,8 +1,6 @@
 <?= $this->extend('template/index'); ?> // Menggunakan template utama "index"
 <?= $this->section('content'); ?> // Membuka section "content" agar konten ini dimasukkan ke layout
 
-
-
 <div class="card border-success mb-4 mt-4"> // Card utama dengan border warna hijau dan margin atas/bawah
     <div class="card-header bg-success bg-opacity-10 text-success fw-bold"> // Header card dengan background hijau transparan
         + Form <?= $title; ?> // Menampilkan judul form sesuai variabel $title
@@ -41,6 +39,5 @@
         </form> // Penutup form
     </div>
 </div>
-
 
 <?= $this->endSection(); ?> // Menutup section content

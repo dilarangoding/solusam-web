@@ -1,8 +1,6 @@
 <?= $this->extend('template/index'); ?>
 <?= $this->section('content'); ?>
 
-
-
 <div class="card border-success mb-4 mt-4">
     <div class="card-header bg-success bg-opacity-10 text-success fw-bold">
         + Form <?= $title; ?>
@@ -49,6 +47,5 @@
         </form>
     </div>
 </div>
-
 
 <?= $this->endSection(); ?>

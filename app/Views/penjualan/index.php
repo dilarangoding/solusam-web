@@ -69,14 +69,12 @@
 
 <?= $this->endSection(); ?>
 
-
 <?= $this->section('js'); ?>
 
 <script>
     function hapus(event) {
         let nama = $(event).data('nama');
         let id = $(event).data('id');
-
 
         //pop up konfirmasi hapus data
         Swal.fire({
@@ -89,7 +87,6 @@
             confirmButtonText: 'Yes',
         }).then((result) => {
             if (result.value) {
-
 
                 //Jika admin klik "Yes", browser mengirim data ID ke server (penjualan/delete) tanpa memuat ulang (refresh) halaman
                 $.ajax({

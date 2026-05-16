@@ -1,8 +1,6 @@
 <?= $this->extend('template/index'); ?>
 <?= $this->section('content'); ?>
 
-
-
 <div class="card border-success mb-4 mt-4">
     <div class="card-header bg-success bg-opacity-10 text-success fw-bold">
         + Form <?= $title; ?>
@@ -45,7 +43,6 @@
                         required>
                 </div>
 
-
                 <div class="col-md-4">
                     <label class="form-label">Jumlah (kg)</label>
                     <input
@@ -65,8 +62,6 @@
                         Jumlah melebihi stok tersedia!
                     </div>
                 </div>
-
-
 
                 <div class="col-md-4">
                     <label class="form-label">Total Harga</label>
@@ -102,7 +97,6 @@
         </form>
     </div>
 </div>
-
 
 <?= $this->endSection(); ?>
 

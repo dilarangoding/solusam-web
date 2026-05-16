@@ -1,20 +1,19 @@
-<?= $this->extend('template/index'); ?> // Memanggil template utama 'index'
-<?= $this->section('content'); ?> // Membuka section content
+<?= $this->extend('template/index'); ?> 
+<?= $this->section('content'); ?>
 
-<h1 class="h3 fw-bold text-dark"><?= $title; ?></h1> // Judul halaman
-<p class="text-muted">Kelola data sampah</p> // Subjudul/deskripsi halaman
-
-<a href="<?= base_url('sampah/create') ?>" class="btn btn-success btn-sm mb-3"> // Tombol tambah data
+<h1 class="h3 fw-bold text-dark"><?= $title; ?></h1> 
+<p class="text-muted">Kelola data sampah</p> 
+<a href="<?= base_url('sampah/create') ?>" class="btn btn-success btn-sm mb-3"> 
     <i class="ti ti-plus"></i> Tambah Data
 </a>
 
 <!-- Data Sampah -->
-<div class="card shadow-sm border-0"> // Card untuk tabel data sampah
+<div class="card shadow-sm border-0">
     <div class="card-body">
-        <h5 class="card-title mb-3"><?= $title; ?></h5> // Judul card
-        <div class="table-responsive"> // Wrapper untuk scroll horizontal pada tabel
-            <table class="table table-bordered table-hover align-middle dataTable"> // Tabel bootstrap dengan DataTable
-                <thead class="table-success"> // Header tabel
+        <h5 class="card-title mb-3"><?= $title; ?></h5> 
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle dataTable"> 
+                <thead class="table-success"> 
                     <tr>
                         <th scope="col">No</th>
                         <th scope="col">Nama Sampah</th>
@@ -27,29 +26,29 @@
                 </thead>
                 <tbody>
                     <?php
-                    // Fungsi untuk format mata uang rupiah
+                    
                     function formatRupiah($number)
                     {
                         return 'Rp ' . number_format($number, 0, ',', '.');
                     }
 
-                    $no = 1; // Inisialisasi nomor urut
-                    foreach ($data as $row) { // Looping data sampah
-                        $margin = $row['harga_jual'] - $row['harga_beli']; // Hitung margin
+                    $no = 1; 
+                    foreach ($data as $row) { 
+                        $margin = $row['harga_jual'] - $row['harga_beli']; 
                     ?>
                         <tr>
-                            <td><?= $no++; ?></td> // Nomor urut
-                            <td><?= $row['nama_sampah']; ?></td> // Nama sampah
-                            <td><?= formatRupiah($row['harga_beli']); ?></td> // Harga beli
-                            <td><?= formatRupiah($row['harga_jual']); ?></td> // Harga jual
-                            <td><?= $row['satuan']; ?></td> // Satuan (kg)
-                            <td class="text-success fw-semibold"><?= formatRupiah($margin); ?></td> // Margin keuntungan
+                            <td><?= $no++; ?></td>
+                            <td><?= $row['nama_sampah']; ?></td> 
+                            <td><?= formatRupiah($row['harga_beli']); ?></td> 
+                            <td><?= formatRupiah($row['harga_jual']); ?></td> 
+                            <td><?= $row['satuan']; ?></td> 
+                            <td class="text-success fw-semibold"><?= formatRupiah($margin); ?></td> 
                             <td>
-                                <a href="<?= base_url('sampah/edit/' . $row['id']) ?>" class="btn btn-outline-primary btn-sm"> // Tombol edit
+                                <a href="<?= base_url('sampah/edit/' . $row['id']) ?>" class="btn btn-outline-primary btn-sm">
                                     <i class="ti ti-pencil"></i>
                                 </a>
                                 <button type="button" data-nama="<?= $row['nama_sampah'] ?>" data-id="<?= $row['id'] ?>"
-                                    onclick="hapus(this)" class="btn btn-outline-danger btn-sm"> // Tombol hapus
+                                    onclick="hapus(this)" class="btn btn-outline-danger btn-sm"> 
                                     <i class="ti ti-trash"></i>
                                 </button>
                             </td>
@@ -61,9 +60,9 @@
     </div>
 </div>
 
-<?= $this->endSection(); ?> // Menutup section content
+<?= $this->endSection(); ?>
 
-<?= $this->section('js'); ?> // Membuka section JS
+<?= $this->section('js'); ?> 
 <script>
     // Fungsi hapus data
     function hapus(event) {

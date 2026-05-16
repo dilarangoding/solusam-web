@@ -24,7 +24,6 @@ class AdminSeeder extends Seeder
 
         $userModel->insert($userData);
 
-
         $clientData = [
             'user_id' => $userModel->getInsertID(),
             'nama_lengkap' => 'Admin',

@@ -4,7 +4,7 @@
 <div class="card border-primary mb-4 mt-4"> // Membuat card berbingkai warna biru
     <div class="card-header bg-primary bg-opacity-10 text-primary fw-bold"> // Header card dengan warna biru transparan
         <i class="ti ti-qrcode me-2"></i> // Icon QR code
-        <?= $title; ?> // Menampilkan judul halaman
+        <?= $title; ?> 
     </div>
 
     <div class="card-body text-center"> // Body card dengan teks rata tengah

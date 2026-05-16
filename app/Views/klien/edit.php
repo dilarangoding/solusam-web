@@ -1,8 +1,8 @@
 <?= $this->extend('template/index'); ?>
-<?php // Memanggil template utama 'index' ?>
+<?php ?>
 
 <?= $this->section('content'); ?>
-<?php // Membuka section 'content' untuk halaman ini ?>
+<?php ?>
 
 <div class="card border-success mb-4 mt-4">
     <!-- Card utama dengan border hijau + margin -->

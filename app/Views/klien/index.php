@@ -1,8 +1,8 @@
 <?= $this->extend('template/index'); ?> 
-<?php // Memanggil template utama "index" ?>
+<?php ?>
 
 <?= $this->section('content'); ?> 
-<?php // Membuka section "content" ?>
+<?php ?>
 
 <h1 class="h3 fw-bold text-dark"><?= $title; ?></h1> 
 <!-- Judul halaman menggunakan variabel $title -->
@@ -46,15 +46,15 @@
                     <?php
                     function formatRupiah($number)
                     {
-                        // Fungsi untuk format angka menjadi Rupiah
+                        
                         return 'Rp ' . number_format($number, 0, ',', '.');
                     }
 
                     $no = 1; 
-                    // Variabel nomor urut untuk tabel
+                    
 
                     foreach ($data as $row) { 
-                        // Looping seluruh data klien
+                        
                     ?>
                         <tr>
                             <!-- Baris data tabel -->
@@ -107,12 +107,10 @@
 </div>
 
 <?= $this->endSection(); ?> 
-<?php // Menutup section "content" ?>
-
+<?php ?>
 
 <?= $this->section('js'); ?> 
-<?php // Membuka section Javascript ?>
-
+<?php ?>
 
 <script>
     function hapus(event) {
@@ -185,4 +183,4 @@
 </script>
 
 <?= $this->endSection(); ?> 
-<?php // Menutup section Javascript ?>
+<?php ?>

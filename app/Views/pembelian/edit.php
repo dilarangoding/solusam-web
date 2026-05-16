@@ -1,8 +1,6 @@
 <?= $this->extend('template/index'); ?>
 <?= $this->section('content'); ?>
 
-
-
 <div class="card border-success mb-4 mt-4">
     <div class="card-header bg-success bg-opacity-10 text-success fw-bold">
         + Form <?= $title; ?>
@@ -41,7 +39,6 @@
                     </select>
                 </div>
 
-
                 <div class="col-md-4">
                     <label class="form-label">Harga</label>
                     <input
@@ -54,7 +51,6 @@
                         readonly
                         required>
                 </div>
-
 
                 <div class="col-md-4">
                     <label class="form-label">Jumlah</label>
@@ -110,14 +106,12 @@
     </div>
 </div>
 
-
 <?= $this->endSection(); ?>
 
 <?= $this->section('js'); ?>
 <script>
     let idsampah = '<?= $data['sampah_id'] ?>';
     hargaSampah(idsampah);
-
 
     $('#nama_sampah').change(function() {
         let id = $(this).val();

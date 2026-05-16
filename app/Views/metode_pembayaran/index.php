@@ -23,8 +23,8 @@
                 <tbody>
                     <?php
 
-                    $no = 1; // Inisialisasi nomor urut
-                    foreach ($data as $row) { // Looping setiap data metode pembayaran
+                    $no = 1; 
+                    foreach ($data as $row) { 
                     ?>
                         <tr>
                             <td><?= $no++; ?></td> // Menampilkan nomor urut

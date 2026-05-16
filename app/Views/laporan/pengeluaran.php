@@ -24,7 +24,6 @@
     </div>
 </div>
 
-
 <div class="card shadow-sm border-0 mt-4">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -58,11 +57,11 @@
                         <label class="form-label">Bulan</label>
                         <select class="form-select" id="bulan">
                         <?php
-                            $currentMonth = date('n'); // Mendapatkan bulan saat ini (1-12)
+                            $currentMonth = date('n'); 
 
                             for ($i = 1; $i <= 12; $i++) {
-                                $monthName = date('F', mktime(0, 0, 0, $i, 1)); // Nama bulan
-                                $selected = ($i == $currentMonth) ? 'selected' : ''; // Tandai sebagai selected jika sesuai dengan bulan saat ini
+                                $monthName = date('F', mktime(0, 0, 0, $i, 1)); 
+                                $selected = ($i == $currentMonth) ? 'selected' : ''; 
                                 echo '<option value="' . $i . '" ' . $selected . '>' . $monthName . '</option>';
                             }
                             ?>
@@ -90,7 +89,6 @@
             </div>
         </div>
 
-
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle dataTable">
                 <thead class="table-success">
@@ -111,7 +109,6 @@
     </div>
 </div>
 <?= $this->endSection(); ?>
-
 
 <?= $this->section('js'); ?>
 <script>
@@ -209,7 +206,6 @@
         } else if (filterType == 'harian') {
             $('#harian-filter').show();
             $('table tbody').empty();
-
 
         }
     });

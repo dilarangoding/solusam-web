@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.35.0/dist/tabler-icons.min.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/datatable-bs5/bootstrap.min.css') ?>">
-    <link rel="icon" type="image/png" href="https://solusam.my.id/assets/img/logosolus.png">
-    <link rel="shortcut icon" type="image/x-icon" href="https://solusam.my.id/favicon.ico?v=2">
+    <link rel="icon" type="image/png" href="<?= base_url('assets/img/logosolus.png') ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= base_url('favicon.ico?v=2') ?>">
 </head>
 
 <body class="bg-light d-flex align-items-center justify-content-center min-vh-100 my-5">

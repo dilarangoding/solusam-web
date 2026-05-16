@@ -2,9 +2,6 @@
 
 use CodeIgniter\Router\RouteCollection;
 
-/**
- * @var RouteCollection $routes
- */
 $routes->get('/', 'LoginController::index');
 $routes->get('login', 'LoginController::index');
 $routes->post('login', 'LoginController::attempLogin');
@@ -17,14 +14,11 @@ $routes->post('forgot-password/send', 'ForgotPasswordController::sendResetLink')
 $routes->get('reset-password/(:any)', 'ForgotPasswordController::resetPassword/$1');
 $routes->post('reset-password/update', 'ForgotPasswordController::updatePassword');
 
-// Google Login
 $routes->get('auth/google', 'AuthController::redirectToGoogle');
 $routes->get('auth/google/callback', 'AuthController::handleGoogleCallback');
 
-
 $routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
 
-// Sampah
 $routes->group('sampah', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'SampahController::index');
     $routes->get('create', 'SampahController::create');
@@ -33,7 +27,6 @@ $routes->group('sampah', ['filter' => 'auth'], function ($routes) {
     $routes->post('delete', 'SampahController::delete');
 });
 
-// Klien
 $routes->group('data-klien', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'DataKlienController::index');
     $routes->get('create', 'DataKlienController::create');
@@ -42,7 +35,6 @@ $routes->group('data-klien', ['filter' => 'auth'], function ($routes) {
     $routes->post('delete', 'DataKlienController::delete');
 });
 
-// Penjualan
 $routes->group('penjualan', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'PenjualanController::index');
     $routes->get('create', 'PenjualanController::create');
@@ -53,17 +45,57 @@ $routes->group('penjualan', ['filter' => 'auth'], function ($routes) {
     $routes->get('qrcode-image/(:num)', 'PenjualanController::generateQrCode/$1');
     $routes->get('qrcode-simple/(:num)', 'PenjualanController::generateQrCodeSimple/$1');
     $routes->get('test-qrcode', 'PenjualanController::testQrCode');
-    // Midtrans routes
+    
     $routes->get('midtrans-payment', 'PenjualanController::midtransPayment');
     $routes->get('midtrans-finish', 'PenjualanController::midtransFinish');
     $routes->get('midtrans-unfinish', 'PenjualanController::midtransUnfinish');
     $routes->get('midtrans-error', 'PenjualanController::midtransError');
 });
 
-// Midtrans notification (webhook) - tidak perlu auth
 $routes->post('penjualan/midtrans-notification', 'PenjualanController::midtransNotification');
 
-// Pembelian
+$routes->group('api/v1', ['namespace' => 'App\Controllers\Api\V1'], function($routes) {
+    
+    $routes->post('auth/login', 'AuthController::login');
+    $routes->post('auth/register', 'AuthController::register');
+    $routes->post('auth/google', 'AuthController::google');
+    $routes->post('auth/forgot-password', 'AuthController::forgotPassword');
+    $routes->post('auth/reset-password', 'AuthController::resetPassword');
+
+    
+    $routes->group('', ['filter' => 'api_auth'], function($routes) {
+        $routes->get('dashboard', 'DashboardController::index');
+        
+        $routes->get('sampah', 'SampahController::index');
+        $routes->post('sampah', 'SampahController::create');
+        $routes->put('sampah/(:num)', 'SampahController::update/$1');
+        $routes->delete('sampah/(:num)', 'SampahController::delete/$1');
+
+        $routes->get('klien', 'KlienController::index');
+        $routes->post('klien', 'KlienController::create');
+        $routes->put('klien/(:num)', 'KlienController::update/$1');
+        $routes->delete('klien/(:num)', 'KlienController::delete/$1');
+
+        $routes->get('metode-bayar', 'MetodePembayaranController::index');
+        $routes->post('metode-bayar', 'MetodePembayaranController::create');
+        $routes->put('metode-bayar/(:num)', 'MetodePembayaranController::update/$1');
+        $routes->delete('metode-bayar/(:num)', 'MetodePembayaranController::delete/$1');
+
+        $routes->get('transaksi/pembelian', 'PembelianController::index');
+        $routes->post('transaksi/pembelian', 'PembelianController::create');
+        $routes->delete('transaksi/pembelian/(:num)', 'PembelianController::delete/$1');
+
+        $routes->get('transaksi/penjualan', 'PenjualanController::index');
+        $routes->post('transaksi/penjualan', 'PenjualanController::create'); 
+        $routes->delete('transaksi/penjualan/(:num)', 'PenjualanController::delete/$1');
+
+        $routes->get('laporan/pemasukan', 'LaporanController::pemasukan');
+        $routes->get('laporan/pengeluaran', 'LaporanController::pengeluaran');
+        $routes->get('laporan/pemasukan/export', 'LaporanController::exportPemasukan');
+        $routes->get('laporan/pengeluaran/export', 'LaporanController::exportPengeluaran');
+    });
+});
+
 $routes->group('pembelian', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'PembelianController::index');
     $routes->get('create', 'PembelianController::create');
@@ -73,7 +105,6 @@ $routes->group('pembelian', ['filter' => 'auth'], function ($routes) {
     $routes->post('delete', 'PembelianController::delete');
 });
 
-// Data Laporan
 $routes->group('laporan', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'LaporanController::index');
     $routes->post('getLaporanData', 'LaporanController::getLaporanData');
@@ -84,15 +115,12 @@ $routes->group('laporan', ['filter' => 'auth'], function ($routes) {
     $routes->get('export', 'LaporanController::exportLaporan');
 });
 
-// Pemasukan dan Pengeluaran
 $routes->get('pemasukan', 'LaporanController::pemasukan', ['filter' => 'auth']);
 $routes->get('pengeluaran', 'LaporanController::pengeluaran', ['filter' => 'auth']);
 $routes->post('getDataInOut', 'LaporanController::getDataInOut', ['filter' => 'auth']);
 $routes->get('export-pemasukan', 'LaporanController::exportPemasukan', ['filter' => 'auth']);
 $routes->get('export-pengeluaran', 'LaporanController::exportPengeluaran', ['filter' => 'auth']);
 
-
-// Metode Bayar
 $routes->group('metode-bayar', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'MetodePembayaranController::index');
     $routes->get('create', 'MetodePembayaranController::create');
@@ -101,13 +129,11 @@ $routes->group('metode-bayar', ['filter' => 'auth'], function ($routes) {
     $routes->post('delete', 'MetodePembayaranController::delete');
 });
 
-// Reset Password
 $routes->group('reset', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'ResetController::index');
     $routes->post('update', 'ResetController::update');
 });
 
-// Public Routes (tidak perlu login)
 $routes->group('public', function ($routes) {
     $routes->get('transaksi/(:num)', 'PublicTransaksiController::detail/$1');
     $routes->get('qrcode/(:num)', 'PublicTransaksiController::generateQrCode/$1');

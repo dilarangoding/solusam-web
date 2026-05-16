@@ -11,14 +11,13 @@
     <link rel="stylesheet" href="<?= base_url('assets/datatable-bs5/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/datatable-bs5/dataTables.bootstrap5.css') ?>" />
     <link rel="shortcut icon" type="image/x-icon" href="<?= base_url('favicon.ico?v=2') ?>">
-    <link rel="icon" type="image/png" href="https://solusam.my.id/assets/img/logosolus.png">
-    <link rel="apple-touch-icon" href="https://solusam.my.id/assets/img/logosolus.png">
+    <link rel="icon" type="image/png" href="<?= base_url('assets/img/logosolus.png') ?>">
+    <link rel="apple-touch-icon" href="<?= base_url('assets/img/logosolus.png') ?>">
     
     <style>
 
     </style>
 </head>
-
 
 <body class="bg-light">
     <div class="d-flex">
