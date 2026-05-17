@@ -52,24 +52,44 @@ class LoginController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            session()->setFlashdata('errors-login', $this->validator->getErrors());
+            $message = [
+                'title' => 'Error',
+                'text' => implode(', ', $this->validator->getErrors()),
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
             return redirect()->back()->withInput();
         }
 
         $user = $this->m_users->getUser($username);
 
         if (!$user) {
-            session()->setFlashdata('errors-login', ['Username atau password salah']);
+            $message = [
+                'title' => 'Error',
+                'text' => 'Username atau password salah',
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
             return redirect()->back();
         }
 
         if (!password_verify($password, $user['password'])) {
-            session()->setFlashdata('errors-login', ['Username atau password salah']);
+            $message = [
+                'title' => 'Error',
+                'text' => 'Username atau password salah',
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
             return redirect()->back();
         }
 
         if ($user['status'] != '1') {
-            session()->setFlashdata('errors-login', ['Akun Anda tidak aktif']);
+            $message = [
+                'title' => 'Error',
+                'text' => 'Akun Anda tidak aktif',
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
             return redirect()->back();
         }
 

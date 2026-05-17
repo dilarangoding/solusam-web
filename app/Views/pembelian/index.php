@@ -12,7 +12,6 @@
     <div class="card-body">
         <h5 class="card-title mb-3"><?= $title; ?></h5>
         <div class="table-responsive">
-            <!--fitur tabel interaktif-->
             <table class="table table-bordered table-hover align-middle dataTable"> 
                 <thead class="table-success">
                     <tr>
@@ -70,7 +69,6 @@
         let nama = $(event).data('nama')
         let id = $(event).data('id')
 
-        //fitur hapus data secara aman dan interaktif
         Swal.fire({
             title: 'Apakah anda yakin?',
             html: `Ingin menghapus data <strong>${nama}</strong>`,

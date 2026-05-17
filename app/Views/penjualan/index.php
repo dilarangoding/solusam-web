@@ -87,8 +87,6 @@
             confirmButtonText: 'Yes',
         }).then((result) => {
             if (result.value) {
-
-                //Jika admin klik "Yes", browser mengirim data ID ke server (penjualan/delete) tanpa memuat ulang (refresh) halaman
                 $.ajax({
                     url: "<?= base_url('penjualan/delete'); ?>",
                     type: 'POST',

@@ -58,7 +58,6 @@
         <div class="mb-3">
             <label for="confirm_password" class="form-label">Konfirmasi Password</label>
             <div class="input-group">
-                <!--Secara otomatis menyembunyikan tulisan yang diketik menjadi titik-titik-->
                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Ulangi password baru" required>
                 <span class="input-group-text" id="togglePassword2" onclick="togglePassword('confirm_password', 'togglePassword2')">
                     <i class="bi bi-eye-slash"></i>

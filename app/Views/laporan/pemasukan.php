@@ -75,7 +75,7 @@
             </div>
 
             <!-- Filter Harian -->
-            <div class="col-md-6" id="harian-filter" style="display: none;"> // Filter harian disembunyikan dulu
+            <div class="col-md-6" id="harian-filter" style="display: none;">
                 <div class="row">
                     <div class="col-md-6">
                         <label class="form-label">Tanggal Mulai</label>
@@ -156,70 +156,40 @@
                     let hargaJual = parseFloat(item.harga_jual) || 0; 
                     $('table tbody').append(`
                             <tr>
-                                <td>${i+1}</td> // Nomor urut
-                                <td>${item.tanggal}</td> // Tanggal transaksi
-                                <td>${item.nama_sampah}</td> // Nama sampah
-                                <td>${item.jumlah}</td> // Berat
-                                <td>Rp ${hargaJual.toLocaleString('id-ID')}</td> // Harga satuan
-                                <td>Rp ${totalPendapatan.toLocaleString('id-ID')}</td> // Total pendapatan
+                                <td>${i+1}</td>
+                                <td>${item.tanggal}</td>
+                                <td>${item.nama_sampah}</td>
+                                <td>${item.jumlah}</td>
+                                <td>Rp ${hargaJual.toLocaleString('id-ID')}</td>
+                                <td>Rp ${totalPendapatan.toLocaleString('id-ID')}</td>
                             </tr>
                         `);
                 });
 
             },
             error: function(xhr, status, error) {
-                console.error(error); // Log error
+                console.error(error);
             }
         });
     }
 
-    // Event handler saat jenis filter diganti
     $('#filter-type').change(function() {
-        var filterType = $(this).val(); // Ambil value terpilih
-
-        $('#tahun-filter').hide(); // Sembunyikan semua
+        var filterType = $(this).val();
         $('#bulan-filter').hide();
         $('#harian-filter').hide();
-
-        if (filterType == 'tahun') { // Tampilkan filter tahun
             $('#tahun-filter').show();
             loadLaporan('tahun', $('#tahun').val(), null, null, null);
-
-        } else if (filterType == 'bulan') { // Filter bulan
             $('#bulan-filter').show();
             loadLaporan('bulan', $('#tahun-bulan').val(), $('#bulan').val(), null, null);
-
-        } else if (filterType == 'harian') { // Filter harian
-            $('#harian-filter').show();
-            $('table tbody').empty(); // Kosongkan tabel sebelum pilih tanggal
         }
     });
-
-    // Input tahun
-    $('#tahun').keyup(function() {
-        loadLaporan('tahun', $(this).val(), null, null, null); // Reload laporan
     });
-
-    // Input bulan dan tahun bulan
     $('#bulan, #tahun-bulan').change(function() {
         loadLaporan('bulan', $('#tahun-bulan').val(), $('#bulan').val(), null, null);
     });
-
-    // Input tanggal selesai
     $('#tanggal-selesai').change(function() {
         loadLaporan('harian', null, null, $('#tanggal-mulai').val(), $('#tanggal-selesai').val());
     });
-
-    // Export Excel
-    $('#export-excel').click(function() {
-        var filterType = $('#filter-type').val(); // Ambil filter
-        var tahun = $('#tahun').val(); // Tahun filter
-        var bulan = $('#bulan').val(); // Bulan filter
-        var tahunBulan = $('#tahun-bulan').val(); // Tahun untuk bulan
-        var tanggalMulai = $('#tanggal-mulai').val(); // Tgl mulai
-        var tanggalSelesai = $('#tanggal-selesai').val(); // Tgl selesai
-
-        var url = '<?= base_url('export-pemasukan'); ?>?'; // Base URL export
         
         if (filterType === 'tahun') {
             url += 'tahun=' + tahun;
@@ -228,8 +198,6 @@
         } else if (filterType === 'harian') {
             url += 'tanggal_mulai=' + tanggalMulai + '&tanggal_selesai=' + tanggalSelesai;
         }
-
-        window.open(url, '_blank'); // Buka file hasil export
     });
 </script>
-<?= $this->endSection(); ?> // Menutup section js
+<?= $this->endSection(); ?>

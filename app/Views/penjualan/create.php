@@ -102,9 +102,7 @@
 
 <?= $this->section('js'); ?>
 <script>
-    // Variabel global untuk menyimpan stok awal
     let stokAwal = 0;
-    //Mengambil Data Saat Sampah Dipilih
     $('#nama_sampah').change(function() {
         let sampahId = $(this).val();
 
@@ -117,19 +115,13 @@
                 },
                 success: function(response) {
                     $('#harga').val(response.harga_jual);
-
-                    // Simpan stok awal dan tampilkan informasi stok
                     stokAwal = parseFloat(response.stok_tersedia) || 0;
                     $('#stok_tersedia').text(stokAwal);
                     $('#stok_info').show();
-
-                    // Reset validasi stok
                     $('#jumlah_jual').removeClass('is-invalid');
                     $('#stok_error').hide();
                     $('#jumlah_jual').val('');
                     $('#total_harga').val('');
-
-                    // Reset warna stok
                     $('#stok_tersedia').removeClass('text-danger').addClass('text-primary');
                 },
                 error: function(xhr, status, error) {
@@ -138,7 +130,6 @@
                 }
             });
         } else {
-            // Reset semua field jika tidak ada sampah yang dipilih
             $('#harga').val('');
             $('#jumlah_jual').val('');
             $('#total_harga').val('');
@@ -149,21 +140,14 @@
         }
     });
 
-//menghitung otomatis secara otomatis dan cek stok realtime
     function jumlah() {
         let harga = parseFloat($('#harga').val()) || 0;
         let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0;
 
         let totalHarga = harga * jumlahJual;
         $('#total_harga').val(totalHarga);
-
-        // Hitung stok tersedia setelah dikurangi jumlah yang akan dijual
         let stokSetelahJual = stokAwal - jumlahJual;
-
-        // Update tampilan stok tersedia
         $('#stok_tersedia').text(stokSetelahJual);
-
-        // Validasi stok dan ubah warna
         if (jumlahJual > stokAwal) {
             $('#jumlah_jual').addClass('is-invalid');
             $('#stok_error').show();
@@ -178,8 +162,6 @@
             $('#stok_tersedia').removeClass('text-warning text-danger').addClass('text-primary');
         }
     }
-
-    // Validasi form sebelum submit
     $('#form_penjualan').on('submit', function(e) {
         let jumlahJual = parseFloat($('#jumlah_jual').val()) || 0;
         let metodeBayar = $('#metode_bayar').val();
@@ -189,20 +171,12 @@
             alert('Jumlah yang dijual (' + jumlahJual + ' kg) melebihi stok tersedia (' + stokAwal + ' kg). Silakan periksa kembali.');
             return false;
         }
-
-        // Jika metode pembayaran Midtrans, handle dengan AJAX dan tampilkan Snap
         if (metodeBayar === 'midtrans') {
-            e.preventDefault(); //Menghentikan formulir agar tidak langsung terkirim secara tradisional. Kita ingin memprosesnya lewat AJAX terlebih dahulu
-
-            // Tampilkan loading
+            e.preventDefault();
             let submitBtn = $(this).find('button[type="submit"]');
             let originalText = submitBtn.html();
             submitBtn.html('<i class="spinner-border spinner-border-sm me-2"></i>Memproses...').prop('disabled', true);
-
-            // Submit form via AJAX
             let formData = new FormData(this);
-
-            //Aplikasi mengirim data penjualan ke Controller. Controller kemudian akan menghubungi server Midtrans untuk meminta sebuah Snap Token
             $.ajax({
                 url: $(this).attr('action'),
                 type: 'POST',
@@ -211,16 +185,11 @@
                 contentType: false,
                 success: function(response) {
                     try {
-                        // Parse JSON response
                         let data = typeof response === 'string' ? JSON.parse(response) : response;
 
                         if (data.success && data.token) {
-                            // Tampilkan Midtrans Snap popup
                             submitBtn.html(originalText).prop('disabled', false);
-
-                            // Load Midtrans Snap JS jika belum dimuat
                             if (typeof snap === 'undefined') {
-                                // Load script Midtrans Snap
                                 let script = document.createElement('script');
                                 <?php
                                 $midtransConfig = config('Midtrans');
@@ -231,10 +200,7 @@
                                 script.src = '<?= $snapUrl ?>';
                                 script.setAttribute('data-client-key', '<?= $midtransConfig->clientKey ?? "" ?>');
                                 document.body.appendChild(script);
-
-                                //muncul snap pop up
                                 script.onload = function() {
-                                    //Ini dijalankan jika browser admin baru pertama kali memuat script Midtrans
                                     snap.pay(data.token, {
                                         onSuccess: function(result) {
                                             console.log('success', result);
@@ -254,9 +220,7 @@
                                     });
                                 };
                             } else {
-                                // Jika sudah dimuat, langsung panggil snap.pay
-                                snap.pay(data.token, { 
-                                    ////Ini dijalankan jika script Midtrans sudah ada di browser
+                                snap.pay(data.token, {
                                     onSuccess: function(result) {
                                         console.log('success', result);
                                         window.location.href = '<?= base_url('penjualan/midtrans-finish') ?>?order_id=' + result.order_id;

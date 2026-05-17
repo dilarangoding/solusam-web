@@ -64,12 +64,11 @@
 
 <?= $this->section('js'); ?> 
 <script>
-    // Fungsi hapus data
     function hapus(event) {
-        let nama = $(event).data('nama'); // Ambil nama dari atribut data
-        let id = $(event).data('id'); // Ambil id dari atribut data
+        let nama = $(event).data('nama');
+        let id = $(event).data('id');
 
-        Swal.fire({ // SweetAlert untuk konfirmasi
+        Swal.fire({
             title: 'Apakah anda yakin?',
             html: `Ingin menghapus data <strong>${nama}</strong>`,
             icon: 'warning',
@@ -79,27 +78,27 @@
             confirmButtonText: 'Yes',
         }).then((result) => {
             if (result.value) {
-                $.ajax({ // AJAX request untuk hapus data
-                        url: "<?= base_url('sampah/delete'); ?>", // URL delete
-                        type: 'POST', // Metode POST
-                        data: { id } // Data yang dikirim (id)
+                $.ajax({
+                        url: "<?= base_url('sampah/delete'); ?>",
+                        type: 'POST',
+                        data: { id }
                     })
-                    .done(function(res) { // Jika berhasil
-                        swal.fire({ // Tampilkan notifikasi hasil
+                    .done(function(res) {
+                        swal.fire({
                             title: res.title,
                             text: res.text,
                             icon: res.icon,
                             showConfirmButton: false,
                             timer: 2000
                         }).then(() => {
-                            location.reload(); // Reload halaman setelah 2 detik
+                            location.reload();
                         });
                     })
-                    .fail(function() { // Jika gagal
+                    .fail(function() {
                         swal.fire('Oops...', 'Something went wrong with ajax !', 'error');
                     });
             }
         });
     }
 </script>
-<?= $this->endSection(); ?> // Menutup section JS
+<?= $this->endSection(); ?>

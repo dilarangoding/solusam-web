@@ -66,7 +66,7 @@
                         required>
                 </div>
 
-                <div class="col-md-4"> // Kolom pilih klien
+                <div class="col-md-4">
                     <label class="form-label">Klien</label>
                     <select name="pembeli" class="form-select" id="pembeli" required> 
                         <option value="" selected disabled>-- Pilih Pembeli --</option>
@@ -111,8 +111,8 @@
                 $('#harga').val(response.harga_beli); 
             },
             error: function(xhr, status, error) {
-                console.error(error); 
-                alert('Terjadi kesalahan saat mengambil data harga.'); /
+                console.error(error);
+                alert('Terjadi kesalahan saat mengambil data harga.');
             }
         });
     });

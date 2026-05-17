@@ -49,7 +49,7 @@
 
 <?= $this->section('js'); ?>
 
-<!-- Midtrans Snap JS — gunakan sandbox atau production sesuai konfigurasi -->
+<!-- Midtrans Snap JS -->
 <?php
 $snapUrl = (getenv('MIDTRANS_IS_PRODUCTION') === 'true')
     ? 'https://app.midtrans.com/snap/snap.js'
@@ -59,26 +59,19 @@ $snapUrl = (getenv('MIDTRANS_IS_PRODUCTION') === 'true')
 
 <script>
     document.getElementById('pay-button').addEventListener('click', function () {
-        // Nonaktifkan tombol agar tidak diklik dua kali
         this.disabled = true;
         this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Memuat...';
-
-        // Buka Midtrans Snap popup
         snap.pay('<?= esc($token); ?>', {
             onSuccess: function (result) {
-                // Pembayaran berhasil — redirect ke finish handler
                 window.location.href = '<?= base_url('penjualan/midtrans-finish'); ?>?order_id=' + result.order_id;
             },
             onPending: function (result) {
-                // Pembayaran pending
                 window.location.href = '<?= base_url('penjualan/midtrans-finish'); ?>?order_id=' + result.order_id;
             },
             onError: function (result) {
-                // Pembayaran error
                 window.location.href = '<?= base_url('penjualan/midtrans-error'); ?>';
             },
             onClose: function () {
-                // User menutup popup tanpa bayar
                 window.location.href = '<?= base_url('penjualan/midtrans-unfinish'); ?>';
             }
         });

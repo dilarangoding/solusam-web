@@ -82,18 +82,11 @@
                                 </a>
 
                                 <button type="button"
-                                    data-nama="<?= $row['nama_lengkap'] ?>" 
-                                    // Menyimpan nama klien di atribut data untuk modal konfirmasi
-
-                                    data-id="<?= $row['id'] ?>" 
-                                    // Menyimpan ID klien untuk keperluan delete
-
-                                    onclick="hapus(this)" 
-                                    // Memanggil fungsi hapus dan mengirim tombol sebagai parameter
-
+                                    data-nama="<?= $row['nama_lengkap'] ?>"
+                                    data-id="<?= $row['id'] ?>"
+                                    onclick="hapus(this)"
                                     class="btn btn-outline-danger btn-sm">
-                                    <i class="ti ti-trash"></i> 
-                                    <!-- Icon hapus -->
+                                    <i class="ti ti-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -114,66 +107,39 @@
 
 <script>
     function hapus(event) {
-        // Fungsi untuk menghapus data menggunakan SweetAlert konfirmasi
-
         let nama = $(event).data('nama')
-        // Mengambil nama dari atribut data-nama pada tombol
-
         let id = $(event).data('id')
-        // Mengambil ID klien dari atribut data-id
 
         Swal.fire({
-            // Menampilkan popup konfirmasi
             title: 'Apakah anda yakin?',
             html: `Ingin menghapus data <strong>${nama}</strong>`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6', // Warna tombol Yes
-            cancelButtonColor: '#d33', // Warna tombol Cancel
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
             confirmButtonText: 'Yes',
         }).then((result) => {
 
             if (result.value) {
-                // Jika user menekan tombol YES
-
                 $.ajax({
-                    // Request AJAX ke server
-
-                    url: "<?= base_url('data-klien/delete'); ?>", 
-                    // URL endpoint delete
-
-                    type: 'POST', 
-                    // Metode POST
-
+                    url: "<?= base_url('data-klien/delete'); ?>",
+                    type: 'POST',
                     data: {
                         id,
-                        // Mengirim ID klien sebagai payload
                     }
                 })
                 .done(function(res) {
-                    // Jika AJAX berhasil
-
                     swal.fire({
-                        title: res.title, 
-                        // Judul dari response server
-
-                        text: res.text, 
-                        // Pesan dari response server
-
-                        icon: res.icon, 
-                        // Icon success/error 
-
+                        title: res.title,
+                        text: res.text,
+                        icon: res.icon,
                         showConfirmButton: false,
                         timer: 2000
-                        // Popup otomatis hilang setelah 2 detik
                     }).then(() => {
                         location.reload();
-                        // Reload halaman setelah sukses delete
                     });
                 })
                 .fail(function() {
-                    // Jika AJAX gagal
-
                     swal.fire('Oops...', 'Something went wrong with ajax !', 'error');
                 });
             }

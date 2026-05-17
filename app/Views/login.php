@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title; ?></title>
     <meta name="description" content="SOLUSAM - Sistem Manajemen Sampah cerdas untuk solusi pengelolaan limbah yang lebih bersih dan terorganisir." />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.35.0/dist/tabler-icons.min.css"> <!--pemanggilan icon eksternal , contoh : logo mata untuk password-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.35.0/dist/tabler-icons.min.css">
 
     <link rel="stylesheet" href="<?= base_url('assets/datatable-bs5/bootstrap.min.css') ?>">
+    <script src="<?= base_url('assets/js/sweetalert2.js') ?>"></script>
 
 </head>
 
@@ -44,6 +45,19 @@
                 </ul>
             </div>
         <?php endif; ?>
+
+        <!-- SweetAlert2 Notification -->
+        <script>
+            <?php if (session('title')): ?>
+                Swal.fire({
+                    title: "<?= session('title') ?>",
+                    text: '<?= session('text') ?>',
+                    icon: "<?= session('icon') ?>",
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+            <?php endif ?>
+        </script>
 
         <!-- Form -->
         <form action="<?= base_url('login') ?>" method="POST" class="needs-validation" novalidate>
@@ -87,8 +101,8 @@
         <div class="text-center mt-4">
             <p class="text-muted small mb-2">Belum punya akun?</p>
             <a href="<?= base_url('daftar') ?>" class="btn btn-outline-success btn-sm">
-                ЁЯЫбя╕П Daftar
-            </a> <!--Menghubungkan pengguna ke halaman daftar.php yang diatur oleh DaftarController-->
+                <i class="ti ti-user-plus"></i> Daftar
+            </a>
         </div>
     </div>
 

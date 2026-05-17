@@ -131,13 +131,23 @@ class DaftarController extends BaseController
                 throw new \Exception('Insert failed');
             }
 
-            
-            return redirect()->to(base_url('/'))->with('login', 'Registrasi berhasil. Silakan login.');
+
+            $message = [
+                'title' => 'Success',
+                'text' => 'Registrasi berhasil. Silakan login.',
+                'icon' => 'success'
+            ];
+            session()->setFlashdata($message);
+            return redirect()->to(base_url('/'));
         } catch (\Throwable $th) {
-             
 
             log_message('error', 'Register exception: ' . $th->getMessage());
-            session()->setFlashdata('errors-daftar', ['Terjadi kesalahan saat menyimpan data: ' . $th->getMessage()]);
+            $message = [
+                'title' => 'Error',
+                'text' => 'Terjadi kesalahan saat menyimpan data: ' . $th->getMessage(),
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
             return redirect()->back()->withInput();
         }
     }

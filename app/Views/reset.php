@@ -9,18 +9,6 @@
                 <h2 class="h4 fw-bold mb-2 text-dark">Ganti Password</h2>
                 <p class="text-muted mb-4">Ubah password akun Anda untuk keamanan yang lebih baik</p>
 
-                <!-- Alert Error -->
-                <?php if (session()->getFlashdata('errors-reset')) : ?>
-                    <div class="alert alert-danger small" role="alert">
-                        <strong>Terdapat kesalahan:</strong>
-                        <ul class="mb-0">
-                            <?php foreach (session()->getFlashdata('errors-reset') as $error) : ?>
-                                <li><?= esc($error) ?></li>
-                            <?php endforeach ?>
-                        </ul>
-                    </div>
-                <?php endif; ?>
-
                 <form action="<?= base_url('reset/update') ?>" method="POST">
                     <!-- Password Saat Ini -->
                     <div class="mb-3">

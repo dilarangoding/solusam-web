@@ -116,7 +116,7 @@
     $('#tahun').val(new Date().getFullYear());
     let tahun = new Date().getFullYear();
     loadLaporan('tahun', tahun);
-    // Function untuk menampilkan data laporan
+
     function loadLaporan(filterType, tahun = null, bulan = null, tanggalMulai = null, tanggalSelesai = null) {
         $.ajax({
             url: "<?= base_url('getDataInOut'); ?>",
@@ -131,38 +131,24 @@
             },
             success: function(response) {
                 console.log(response);
-
-                // Update summary cards
-                // Inisialisasi variabel untuk menyimpan total
                 let totalBerat = 0;
                 let totalUangMasuk = 0;
 
-                // Pastikan response adalah array
                 if (Array.isArray(response)) {
-                    // Lakukan looping terhadap setiap elemen dalam array
                     response.forEach(function(data) {
-                        // Tambahkan nilai dari setiap elemen ke total
-                        totalBerat += parseFloat(data.jumlah) || 0; // Pastikan nilainya angka
+                        totalBerat += parseFloat(data.jumlah) || 0;
                         totalUangMasuk += parseFloat(data.total_pengeluaran) || 0;
                     });
-
-                    // Format total uang
                     totalUangMasukFormatted = 'Rp ' + totalUangMasuk.toLocaleString('id-ID');
-
-                    // Update summary cards dengan total yang sudah dihitung
                     $('#total-berat').text(totalBerat.toLocaleString('id-ID') + ' kg');
                     $('#total-uang-masuk').text(totalUangMasukFormatted);
 
                 } else {
-                    // Jika response bukan array, tampilkan nilai default
                     $('#total-berat').text('0 kg');
                     $('#total-uang-masuk').text('Rp 0');
                 }
 
-                // // Update table data (kosongkan dulu)
                 $('table tbody').empty();
-
-                // // Isi data ke table
                 $.each(response, function(i, item) {
                     let totalPendapatan = parseFloat(item.total_pengeluaran) || 0;
                     let hargaBeli = parseFloat(item.harga_beli) || 0;
@@ -184,17 +170,11 @@
             }
         });
     }
-
-    // Event handler untuk filter type
     $('#filter-type').change(function() {
-        var filterType = $(this).val();
-
-        // Sembunyikan semua filter
+        var filterType = $(this).val());
         $('#tahun-filter').hide();
         $('#bulan-filter').hide();
         $('#harian-filter').hide();
-
-        // Tampilkan filter yang sesuai
         if (filterType == 'tahun') {
             $('#tahun-filter').show();
             loadLaporan('tahun', $('#tahun').val(), null, null, null);
@@ -209,23 +189,15 @@
 
         }
     });
-
-    // Event handler untuk filter tahun
     $('#tahun').keyup(function() {
         loadLaporan('tahun', $(this).val(), null, null, null);
     });
-
-    // Event handler untuk filter bulan
     $('#bulan, #tahun-bulan').change(function() {
         loadLaporan('bulan', $('#tahun-bulan').val(), $('#bulan').val(), null, null);
     });
-
-    // Event handler untuk filter harian
     $('#tanggal-selesai').change(function() {
         loadLaporan('harian', null, null, $('#tanggal-mulai').val(), $('#tanggal-selesai').val());
     });
-
-    // Export Excel functionality
     $('#export-excel').click(function() {
         var filterType = $('#filter-type').val();
         var tahun = $('#tahun').val();

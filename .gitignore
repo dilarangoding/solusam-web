@@ -131,4 +131,15 @@ _modules/*
 
 node_modules/
 
+# Uploads / bukti pembayaran / screenshots
 public/bukti/
+public/uploads/
+public/assets/img/profile/
+
+# Build artifacts
+builds
+/build/
+
+# Screenshot folder di root
+Screenshoot/
+screenshots/

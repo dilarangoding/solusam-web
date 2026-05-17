@@ -77,31 +77,47 @@ class ResetController extends BaseController
             ]
         ];
 
-        
+
         if (!$this->validate($rules)) {
-            return redirect()->back()
-                ->withInput()
-                ->with('errors-reset', $this->validator->getErrors());
+            $message = [
+                'title' => 'Error',
+                'text' => implode(', ', $this->validator->getErrors()),
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
+            return redirect()->back()->withInput();
         }
 
-        
+
         $currentPassword = $this->request->getPost('current_password');
 
-         
+
         $newPassword     = $this->request->getPost('new_password');
 
-       
+
         $user = $users->find($userId);
 
-        
-        
+
+
         if (!$user) {
-            return redirect()->back()->with('errors-reset', ['User tidak ditemukan.']);
+            $message = [
+                'title' => 'Error',
+                'text' => 'User tidak ditemukan.',
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
+            return redirect()->back();
         }
 
-         
+
         if (!password_verify($currentPassword, $user['password'])) {
-            return redirect()->back()->with('errors-reset', ['Password lama tidak sesuai.']);
+            $message = [
+                'title' => 'Error',
+                'text' => 'Password lama tidak sesuai.',
+                'icon' => 'error'
+            ];
+            session()->setFlashdata($message);
+            return redirect()->back();
         }
 
         
